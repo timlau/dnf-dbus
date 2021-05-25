@@ -1,8 +1,10 @@
 """ Client Module"""
 
+from typing import List
 from dasbus.connection import SystemMessageBus
 from dasbus.identifier import DBusServiceIdentifier
 from gi.repository import GLib
+import json
 
 # Constants
 DNFDBUS = DBusServiceIdentifier(
@@ -24,8 +26,12 @@ class DnfDbusClient:
         """ Read a Xfconf property"""
         self.proxy.Quit()
 
+    def get_repositories(self) -> List:
+        return json.loads(self.proxy.GetRepositories())
+
+
 if __name__ == "__main__":
     client = DnfDbusClient()
     print(client.get_version())
     client.quit()
-    
+

@@ -2,6 +2,8 @@
 dnfdbus.dnf module
 """
 import sys
+import json
+from typing import Dict
 import dnf
 
 class DnfRepository:
@@ -23,6 +25,11 @@ class DnfRepository:
     @property
     def enabled(self):
         return self.repo.enabled
+
+    @property    
+    def dump(self) -> Dict:
+        return  {'id': self.id, 'name': self.name, 'enabled': self.enabled}
+        
 
 class DnfPkg:
     """ Wrapper for dnf po"""
