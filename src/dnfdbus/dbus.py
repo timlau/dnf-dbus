@@ -1,7 +1,7 @@
 from typing import List
 from dasbus.server.interface import dbus_interface
 from dasbus.typing import Str
-from .backend import DnfBackend
+from dnfdbus.backend import DnfBackend
 
 import json
 

@@ -33,5 +33,6 @@ class DnfDbusClient:
 if __name__ == "__main__":
     client = DnfDbusClient()
     print(client.get_version())
+    print(client.get_repositories())
     client.quit()
 
