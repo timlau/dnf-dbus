@@ -19,7 +19,11 @@ GIT_MASTER=master
 CURDIR = ${shell pwd}
 BUILDDIR= $(CURDIR)/build
 
-
+show-vars:
+	@echo $(VERSION)
+	@echo ${GITDATE}
+	@echo ${BUMPED_MINOR}
+	@echo ${NEW_VER}-${NEW_REL}	
 
 install:
 	mkdir -p $(DESTDIR)$(DATADIR)/dbus-1/system-services
@@ -63,9 +67,6 @@ test-release:
 	# +1 Minor version and add 0.1-gitYYYYMMDD release
 	@cat ${APPNAME}.spec | sed  -e 's/${VER_REGEX}/\1${BUMPED_MINOR}/' -e 's/\(^Release:\s*\)\([0-9]*\)\(.*\)./\10.1.${GITDATE}%{?dist}/' > ${APPNAME}-test.spec ; mv ${APPNAME}-test.spec ${APPNAME}.spec
 	@git commit -a -m "bumped ${APPNAME} version ${NEW_VER}-${NEW_REL}"
-	# Make Changelog
-	@git log --pretty --numstat --summary | ./tools/git2cl > ChangeLog
-	@git commit -a -m "updated ChangeLog"
 	# Make archive
 	@rm -rf ${APPNAME}-${NEW_VER}.tar.gz
 	@git archive --format=tar --prefix=$(PKGNAME)-$(NEW_VER)/ HEAD | xz >build/SOURCES/${PKGNAME}-$(NEW_VER).tar.xz
@@ -74,6 +75,6 @@ test-release:
 	@$(MAKE) test-cleanup
 
 
-PNONY: run-tests selinux install build-setup test-release test-cleanup
+PNONY: run-tests selinux install build-setup test-release test-cleanup show-vars
 
 
