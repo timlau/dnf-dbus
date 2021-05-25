@@ -1,0 +1,8 @@
+[Unit]
+Description=Package management DnfDbus
+
+[Service]
+Type=dbus
+BusName=dk.rasmil.DnfDbus
+User=root
+ExecStart=/usr/share/dnfdbus/dnfdbus
