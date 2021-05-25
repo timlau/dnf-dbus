@@ -81,7 +81,7 @@ make install DESTDIR=%{buildroot} DATADIR=%{_datadir} SYSCONFDIR=%{_sysconfdir}
 
 %files -n  python3-%{name}
 %{python3_sitelib}/%{name}/
-%{python3_sitelib}/python_%{name}-%{version}-py%{python3_version}.egg-info/
+%{python3_sitelib}/%{name}-%{version}-py%{python3_version}.egg-info/
 
 
 %post
