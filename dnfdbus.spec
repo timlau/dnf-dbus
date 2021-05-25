@@ -71,7 +71,6 @@ make install DESTDIR=%{buildroot} DATADIR=%{_datadir} SYSCONFDIR=%{_sysconfdir}
 %doc README.md
 %license LICENSE
 %{_datadir}/dbus-1/system-services/%{dnf_org}*
-%{_datadir}/dbus-1/services/%{dnf_org}*
 %{_datadir}/%{name}/
 %{_unitdir}/%{name}.service
 %{_datadir}/polkit-1/actions/%{dnf_org}*
