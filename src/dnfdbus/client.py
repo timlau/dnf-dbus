@@ -12,6 +12,13 @@ DNFDBUS = DBusServiceIdentifier(
     message_bus=SystemMessageBus()
 )
 
+class DnfRepo:
+    def __init__(self, attr) -> None:
+        self.id:str = None
+        self.name: str = None
+        self.enabled:bool = None
+        self.__dict__.update(attr)
+
 # Classes
 class DnfDbusClient:
     """Wrapper class for the dk.rasmil.DnfDbus Dbus object"""
@@ -27,12 +34,16 @@ class DnfDbusClient:
         self.proxy.Quit()
 
     def get_repositories(self) -> List:
-        return json.loads(self.proxy.GetRepositories())
+        repos = json.loads(self.proxy.GetRepositories())
+        return [DnfRepo(repo) for repo in repos]
 
 
 if __name__ == "__main__":
     client = DnfDbusClient()
     print(client.get_version())
-    print(client.get_repositories())
+    repos = client.get_repositories()
+    for repo in repos:
+        if repo.enabled:
+            print(f'{repo.id:50} : {repo.name}')
     client.quit()
 
