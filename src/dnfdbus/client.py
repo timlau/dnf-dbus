@@ -20,6 +20,12 @@ class DnfDbusClient:
         """ Read a Xfconf property"""
         return self.proxy.Version()
 
+    def quit(self) -> None:
+        """ Read a Xfconf property"""
+        self.proxy.Quit()
+
 if __name__ == "__main__":
     client = DnfDbusClient()
     print(client.get_version())
+    client.quit()
+    

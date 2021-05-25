@@ -30,6 +30,6 @@ from dnfdbus.dbus import DnfDbus
 
 loop = EventLoop()
 bus = SystemMessageBus()
-bus.publish_object("/dk/rasmil/DnfDbus", DnfDbus())
+bus.publish_object("/dk/rasmil/DnfDbus", DnfDbus(loop))
 bus.register_service("dk.rasmil.DnfDbus")
 loop.run()
