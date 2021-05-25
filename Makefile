@@ -36,7 +36,7 @@ install:
 	install -m644 dbus/dnfdbus.service $(DESTDIR)$(SYSTEMDSYSTEMUNITDIR)/.				
 	install -m644 dbus/$(ORG_NAME).conf $(DESTDIR)$(SYSCONFDIR)/dbus-1/system.d/.				
 	install -m644 policykit1/$(ORG_NAME).policy $(DESTDIR)$(DATADIR)/polkit-1/actions/.				
-	install -m755 daemon/dnfdbus.py $(DESTDIR)/$(PKGDIR)/dnfdbus
+	install -m755 daemon/dnfdbus $(DESTDIR)/$(PKGDIR)/dnfdbus
 
 selinux:
 	@$(MAKE) install
