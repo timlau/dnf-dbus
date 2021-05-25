@@ -107,5 +107,5 @@ fi
 
 
 %changelog
-* Thu May 22 2021 Tim Lauridsen <timlau@fedoraproject.org> 1.0.0-1
+* Tue May 25 2021 Tim Lauridsen <timlau@fedoraproject.org> 1.0.0-1
 - Intial Package
