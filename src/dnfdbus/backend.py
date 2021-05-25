@@ -75,9 +75,7 @@ class DnfPackages:
     @property
     def available(self):
         self.backend.setup()
-        q = self.base.sack.query()
-        q = q.available()
-        q = q.latest()
+        q = self.base.sack.query().available().latest()
         return [DnfPkg(pkg) for pkg in q]
 
     @property

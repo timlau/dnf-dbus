@@ -140,10 +140,10 @@ class TestDnfBackend(unittest.TestCase):
         res = self.backend.get_repositories()
         self.assertEqual(self.backend.is_setup, True)
         self.base.read_all_repos.assert_called()
-        self.base.fill_sack.assert_called()
+        self.base.fill_sack_from_repos_in_cache.assert_called()
         res = self.backend.get_repositories()
         self.base.read_all_repos.assert_called_once()
-        self.base.fill_sack.assert_called_once()
+        self.base.fill_sack_from_repos_in_cache.assert_called_once()
 
     def test_get_repositories(self):
         res = self.backend.get_repositories()
@@ -173,8 +173,7 @@ class TestDnfBackend(unittest.TestCase):
 
     def test_pkg_available(self):
         query = Mock()
-        query.available.return_value = TEST_PKG_LIST
-        query.latest.return_value = TEST_PKG_LIST
+        query.available().latest.return_value = TEST_PKG_LIST
         self.base.sack.query.return_value = query
         pkgs = self.backend.packages
         inst = pkgs.available
