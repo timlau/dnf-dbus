@@ -15,12 +15,10 @@ BuildRequires:  python3-devel
 BuildRequires:  make
 BuildRequires:  systemd
 
-# Ensure that correct pygobject module is available
 Requires:       python3-gobject
-Requires:       python3-dasbus
 Requires:       python3-dnf >= %{dnf_version}
-
 Requires:       polkit
+Requires:       python3-%{name} = %{version}
 
 Requires(post): systemd
 Requires(preun): systemd
