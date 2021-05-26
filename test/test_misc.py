@@ -37,3 +37,9 @@ class TestMisc(unittest.TestCase):
         self.assertEqual(r,'1.fc34')
         self.assertEqual(a,'noarch')
 
+        n,e,v,r,a = to_nevra('qt6-qttools-libs-designercomponents-6.0.1-1.fc34.x86_64')
+        self.assertEqual(n,'qt6-qttools-libs-designercomponents')
+        self.assertEqual(e,'0')
+        self.assertEqual(v,'6.0.1')
+        self.assertEqual(r,'1.fc34')
+        self.assertEqual(a,'x86_64')

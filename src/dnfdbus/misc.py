@@ -4,7 +4,7 @@ import re
 
 log = logging.getLogger('dnfdbus.common')
 
-NEVRA_RE = re.compile(r'([a-z\-]*?)(-([0-9]*):|-)([0-9\.]*)-([0-9a-z\.]*)\.([a-z0-9_]*)$',re.IGNORECASE)
+NEVRA_RE = re.compile(r'([a-z0-9_\-]*)(-([0-9]*):|-)([0-9\.]*)-([0-9a-z\.]*)\.([a-z0-9_]*)$',re.IGNORECASE)
 
 
 def to_nevra(pkg):
