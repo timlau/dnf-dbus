@@ -17,15 +17,12 @@ class DnfDbus(object):
         self.loop = loop
         self.backend = DnfBackend(Base())
 
-    @logger
     def Version(self) -> Str:
         return f'Version : {VERSION}'
 
-    @logger
     def Quit(self) -> None:
         self.loop.quit()
 
-    @logger
     def GetRepositories(self) -> Str:
         repos = self.backend.get_repositories()
         return json.dumps([repo.dump for repo in repos])
