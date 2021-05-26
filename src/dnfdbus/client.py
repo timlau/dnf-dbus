@@ -24,7 +24,6 @@ class DnfRepo:
 
 class DnfPkg:
     def __init__(self, pkg) -> None:
-        print(pkg)
         self.n,self.e,self.v,self.r,self.a = to_nevra(pkg)
 
     def __repr__(self) -> str:
