@@ -25,7 +25,7 @@ import argparse
 from dasbus.connection import SystemMessageBus
 from dasbus.loop import EventLoop
 
-from dnfdbus.misc import do_log_setup
+from dnfdbus.misc import do_log_setup, log
 from dnfdbus.server import DnfDbus, SYSTEM_BUS, DNFDBUS
 
 if __name__ == "__main__":
@@ -38,8 +38,11 @@ if __name__ == "__main__":
             do_log_setup(logroot='dnfdbus', loglvl=logging.DEBUG)
         else:
             do_log_setup(logroot='dnfdbus')
-    loop = EventLoop()
-    bus = SYSTEM_BUS
-    bus.publish_object(DNFDBUS.object_path, DnfDbus(loop))
-    bus.register_service(DNFDBUS.service_name)
-    loop.run()
+    try:                    
+        loop = EventLoop()
+        log.info(f'Starting {DNFDBUS.object_path} : {DNFDBUS.service_name}')
+        SYSTEM_BUS.publish_object(DNFDBUS.object_path, DnfDbus(loop))
+        SYSTEM_BUS.register_service(DNFDBUS.service_name)
+        loop.run()
+    finally:
+        SYSTEM_BUS.disconnect()
