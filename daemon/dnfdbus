@@ -19,18 +19,14 @@
 #
 # dnf dBus service
 
-# FIXME: Hack for gobject don't blow up'
-import os
-os.environ['XDG_RUNTIME_DIR'] = '/root'
-
+import logging
 import argparse
 
-from dasbus.loop import EventLoop
 from dasbus.connection import SystemMessageBus
+from dasbus.loop import EventLoop
 
-from dnfdbus.dbus import DnfDbus
 from dnfdbus.misc import do_log_setup
-
+from dnfdbus.dbus import DnfDbus
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Dnf D-Bus Daemon')
