@@ -26,7 +26,7 @@ from dasbus.connection import SystemMessageBus
 from dasbus.loop import EventLoop
 
 from dnfdbus.misc import do_log_setup
-from dnfdbus.dbus import DnfDbus
+from dnfdbus.server import DnfDbus
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Dnf D-Bus Daemon')
