@@ -40,7 +40,6 @@ class DnfDbus(object):
         super().__init__()
         self.authorized_sender_read = set()
         self.authorized_sender_write = set()
-        self._lock = None
         self._is_working = False
         self.loop = loop
         self.backend = DnfBackend(Base())
@@ -50,24 +49,26 @@ class DnfDbus(object):
         return f'Version : {VERSION}'
 
     def Quit(self) -> None:
-        self.working_start(None,write=True)
+        self.working_start(write=False)
         log.info("Quiting dk.rasmil.DnfDbus")
         self.loop.quit()
         self.working_ended()
 
     def GetRepositories(self) -> Str:
+        self.working_start(write=False)
         log.debug("Starting GetRepository")
         repos = self.backend.get_repositories()
-        return json.dumps([repo.dump for repo in repos])
+        return self.working_ended(json.dumps([repo.dump for repo in repos]))
 
     def GetPackagesByKey(self, key: Str) -> Str:
+        self.working_start(write=False)
         log.debug("Starting GetPackagesByKey")
         pkgs = self.backend.packages.by_key(key)
-        return json.dumps([pkg.dump for pkg in pkgs])
+        return self.working_ended(json.dumps([pkg.dump for pkg in pkgs]))
 
 # ======================= Helpers ====================================
 
-    def working_start(self, sender, write=True):
+    def working_start(self,  write=True):
         if write:
             self.check_permission_write()
         else:
