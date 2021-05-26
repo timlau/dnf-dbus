@@ -22,7 +22,7 @@ class DnfDbus(object):
         return f'Version : {VERSION}'
 
     def Quit(self) -> None:
-        log.debug("Starting Quit")
+        log.info("Quiting dk.rasmil.DnfDbus")
         self.loop.quit()
 
     def GetRepositories(self) -> Str:

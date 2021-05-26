@@ -20,7 +20,7 @@ def logger(func):
     return newFunc
 
 
-def do_log_setup(logroot='dnfdnus', logfmt='%(asctime)s: %(message)s',
+def do_log_setup(logroot='dnfdbus', logfmt='%(asctime)s: %(message)s',
                       loglvl=logging.INFO):
     """Setup Python logging."""
     log = logging.getLogger(logroot)
