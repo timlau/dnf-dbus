@@ -26,7 +26,7 @@ from dasbus.connection import SystemMessageBus
 from dasbus.loop import EventLoop
 
 from dnfdbus.misc import do_log_setup
-from dnfdbus.server import DnfDbus
+from dnfdbus.server import DnfDbus, SYSTEM_BUS, DNFDBUS
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Dnf D-Bus Daemon')
@@ -39,7 +39,7 @@ if __name__ == "__main__":
         else:
             do_log_setup(logroot='dnfdbus')
     loop = EventLoop()
-    bus = SystemMessageBus()
-    bus.publish_object("/dk/rasmil/DnfDbus", DnfDbus(loop))
-    bus.register_service("dk.rasmil.DnfDbus")
+    bus = SYSTEM_BUS
+    bus.publish_object(DNFDBUS.object_path, DnfDbus(loop))
+    bus.register_service(DNFDBUS.service_name)
     loop.run()

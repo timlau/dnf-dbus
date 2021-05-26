@@ -12,6 +12,15 @@ from dnfdbus.backend import DnfBackend
 from dnfdbus.misc import log
 from dnfdbus.polkit import check_permission, DBUS_SENDER
 
+# Constants
+SYSTEM_BUS = SystemMessageBus()
+
+DNFDBUS = DBusServiceIdentifier(
+    namespace=("dk", "rasmil", "DnfDbus"),
+    message_bus=SYSTEM_BUS
+)
+
+
 
 import json
 
@@ -28,7 +37,7 @@ dbus_error = get_error_decorator(error_mapper)
 class AccessDeniedError(DBusError):
     pass
 
-@dbus_interface("dk.rasmil.DnfDbus")
+@dbus_interface(DNFDBUS.interface_name)
 class DnfDbus(object):
 
     def __init__(self, loop) -> None:
