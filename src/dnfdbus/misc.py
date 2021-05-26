@@ -1,7 +1,24 @@
 import logging
 import sys
+import re
 
 log = logging.getLogger('dnfdbus.common')
+
+NEVRA_RE = re.compile(r'([a-z\-]*?)(-([0-9]*):|-)([0-9\.]*)-([0-9a-z\.]*)\.([a-z0-9_]*)$',re.IGNORECASE)
+
+
+def to_nevra(pkg):
+    match = NEVRA_RE.search(pkg)
+    n = match.group(1)
+    if match.group(3):
+        e = match.group(3)
+    else:
+        e = '0'
+    v = match.group(4)
+    r = match.group(5)
+    a = match.group(6)
+    #print(f'{n=} {e=} {v=} {r=} {a=}')
+    return n,e,v,r,a
 
 
 def logger(func):

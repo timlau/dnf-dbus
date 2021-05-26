@@ -7,6 +7,8 @@ from dasbus.typing import Str
 from gi.repository import GLib
 import json
 
+from dnfdbus.misc import to_nevra
+
 # Constants
 DNFDBUS = DBusServiceIdentifier(
     namespace=("dk", "rasmil", "DnfDbus"),
@@ -21,12 +23,35 @@ class DnfRepo:
         self.__dict__.update(attr)
 
 class DnfPkg:
-    def __init__(self, pkg: Str) -> None:
-        self.pkg = pkg
+    def __init__(self, pkg) -> None:
+        self.n,self.e,self.v,self.r,self.a = to_nevra(pkg)
 
     def __repr__(self) -> str:
-        return f'DnfPkg({self.pkg})'
-        
+        if self.e == '0':
+            return f'{self.n}-{self.v}-{self.r}.{self.a}'
+        else:
+            return f'{self.n}-{self.e}:{self.v}-{self.r}.{self.a}'
+
+    @property
+    def name(self):
+        return self.n
+
+    @property
+    def version(self):
+        return self.v
+
+    @property
+    def release(self):
+        return self.r
+
+    @property
+    def arch(self):
+        return self.a
+
+    @property
+    def epoch(self):
+        return self.e
+
 # Classes
 class DnfDbusClient:
     """Wrapper class for the dk.rasmil.DnfDbus Dbus object"""

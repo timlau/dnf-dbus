@@ -6,6 +6,7 @@ from unittest.mock import MagicMock, Mock, patch
 
 from dnf import query, subject
 import dnfdbus.backend as backend
+from dnfdbus.client import DnfPkg
 
 
 TEST_PKGS = [
@@ -21,56 +22,7 @@ TEST_PKGS = [
     "NetworkManager-bluetooth-1:1.30.4-1.fc34.x86_64",
 ]
 
-NEVRA_RE = re.compile(r'([a-z\-]*?)(-([0-9]*):|-)([0-9\.]*)-([0-9a-z\.]*)\.([a-z0-9_]*)$',re.IGNORECASE)
-
-
-def to_nerva(pkg):
-    match = NEVRA_RE.search(pkg)
-    n = match.group(1)
-    if match.group(3):
-        e = match.group(3)
-    else:
-        e = '0'
-    v = match.group(4)
-    r = match.group(5)
-    a = match.group(6)
-    #print(f'{n=} {e=} {v=} {r=} {a=}')
-    return n,e,v,r,a
-
-class TestPkg:
-    def __init__(self, pkg) -> None:
-        self.n,self.e,self.v,self.r,self.a = to_nerva(pkg)
-
-    def __repr__(self) -> str:
-        if self.e == '0':
-            return f'{self.n}-{self.v}-{self.r}.{self.a}'
-        else:
-            return f'{self.n}-{self.e}:{self.v}-{self.r}.{self.a}'
-
-
-    @property
-    def name(self):
-        return self.n
-
-    @property
-    def version(self):
-        return self.v
-
-    @property
-    def release(self):
-        return self.r
-
-    @property
-    def arch(self):
-        return self.a
-
-    @property
-    def epoch(self):
-        return self.e
-
-TEST_PKG_LIST = [TestPkg(pkg) for pkg in TEST_PKGS]        
-
-
+TEST_PKG_LIST = [DnfPkg(pkg) for pkg in TEST_PKGS]        
 
 # define the allowed method of the Dnf Base Mock
 DNF_MOCK_SPEC = [
@@ -79,10 +31,6 @@ DNF_MOCK_SPEC = [
     'fill_sack_from_repos_in_cache',
     'sack'
 ]
-
-def build_pkgs():
-    for pkg in TEST_PKGS:
-        to_nerva(pkg)
 
 def dnf_mock():
     """ Setup at dnf.Base Mock"""
@@ -121,9 +69,6 @@ class TestRepository(unittest.TestCase):
         self.assertEqual(id, 'id')
         self.assertEqual(name, 'name')
         self.assertEqual(enabled, True)
-
-
-
 
 
 class TestDnfBackend(unittest.TestCase):
@@ -196,6 +141,3 @@ class TestDnfBackend(unittest.TestCase):
         self.assertIsInstance(res, list)
         self.assertIsInstance(res[0], backend.DnfPkg)
 
-if __name__ == '__main__':
-    #unittest.main()
-    build_pkgs()
