@@ -92,6 +92,13 @@ class DnfPackages:
         q = q.available()
         return [DnfPkg(pkg) for pkg in q]
 
+    def by_key(self, key):
+        """ find packages the match a key (Ex. '*qt6*') """
+        self.backend.setup()
+        subject = dnf.subject.Subject(key)
+        q = subject.get_best_query(self.base.sack)
+        return [DnfPkg(pkg) for pkg in q]
+
 class DnfBackend:
 
     def __init__(self, base) -> None:
@@ -121,19 +128,7 @@ class DnfBackend:
 if __name__ == "__main__":
     b = DnfBackend(dnf.Base())
     pkgs = b.packages
-    inst = pkgs.available
-    cnt = 0
-    print("TEST_PKGS = [")
-    for pkg in inst:
+    res = pkgs.by_key("*qt6*")
+    for pkg in res:
         print(f'    "{str(pkg)}",')
-        cnt += 1
-        if cnt == 10:
-            break
-    print("]")
-
-    sys.exit(0)
-    repos = b.get_repositories()
-    print(repos)
-    for repo in repos:
-        print(repo.id, repo.name, repo.enabled)
     

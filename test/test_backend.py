@@ -2,9 +2,9 @@
 
 import unittest
 import re
-from unittest.mock import MagicMock, Mock
+from unittest.mock import MagicMock, Mock, patch
 
-from dnf import query
+from dnf import query, subject
 import dnfdbus.backend as backend
 
 
@@ -86,7 +86,7 @@ def build_pkgs():
 
 def dnf_mock():
     """ Setup at dnf.Base Mock"""
-    base = Mock(spec=DNF_MOCK_SPEC)
+    base = MagicMock(spec=DNF_MOCK_SPEC)
     repo1 = Mock()
     repo1.id = 'id1'
     repo1.name = 'id1'
@@ -125,6 +125,7 @@ class TestRepository(unittest.TestCase):
 
 
 
+
 class TestDnfBackend(unittest.TestCase):
 
     def setUp(self):
@@ -155,12 +156,9 @@ class TestDnfBackend(unittest.TestCase):
         self.assertEqual(res[2].enabled, False)
 
     def test_pkg_installed(self):
-        query = Mock()
-        query.installed.return_value = TEST_PKG_LIST
-        self.base.sack.query.return_value = query
+        self.base.sack.query().installed.return_value = TEST_PKG_LIST
         pkgs = self.backend.packages
         inst = pkgs.installed
-        #print(f'{inst=}')
         self.assertIsInstance(inst, list)
         self.assertEqual(len(inst), 10)
         pkg = inst[0] # AtomicParsley-0.9.5-17.fc34.x86_64
@@ -172,9 +170,7 @@ class TestDnfBackend(unittest.TestCase):
         self.assertEqual(pkg.epoch,'0')
 
     def test_pkg_available(self):
-        query = Mock()
-        query.available().latest.return_value = TEST_PKG_LIST
-        self.base.sack.query.return_value = query
+        self.base.sack.query().available().latest.return_value = TEST_PKG_LIST
         pkgs = self.backend.packages
         inst = pkgs.available
         #print(f'{inst=}')
@@ -187,6 +183,18 @@ class TestDnfBackend(unittest.TestCase):
         self.assertEqual(pkg.release,'17.fc34')
         self.assertEqual(pkg.arch,'x86_64')
         self.assertEqual(pkg.epoch,'0')
+    
+    @patch('dnf.subject.Subject')
+    def test_pkg_by_key(self, mock_sbj):
+        mock_sbj().get_best_query.return_value = TEST_PKG_LIST
+        pkgs = self.backend.packages
+        res = pkgs.by_key("*qt6*") 
+        # dnf.subject.Subject method calls
+        mock_sbj.assert_called_with('*qt6*')
+        mock_sbj().get_best_query.assert_called()
+        # returns list of DnfPkg
+        self.assertIsInstance(res, list)
+        self.assertIsInstance(res[0], backend.DnfPkg)
 
 if __name__ == '__main__':
     #unittest.main()
