@@ -29,7 +29,7 @@ from dasbus.loop import EventLoop
 from dasbus.connection import SystemMessageBus
 
 from dnfdbus.dbus import DnfDbus
-from dnfdbus.misc import *
+from dnfdbus.misc import do_log_setup
 
 
 if __name__ == "__main__":
