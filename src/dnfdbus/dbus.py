@@ -2,6 +2,7 @@ from typing import List
 from dasbus.server.interface import dbus_interface
 from dasbus.typing import Str
 from dnfdbus.backend import DnfBackend
+from dnfdbus.misc import *
 from dnf import Base
 
 import json
@@ -16,12 +17,15 @@ class DnfDbus(object):
         self.loop = loop
         self.backend = DnfBackend(Base())
 
+    @logger
     def Version(self) -> Str:
         return f'Version : {VERSION}'
 
+    @logger
     def Quit(self) -> None:
         self.loop.quit()
 
+    @logger
     def GetRepositories(self) -> Str:
         repos = self.backend.get_repositories()
         return json.dumps([repo.dump for repo in repos])

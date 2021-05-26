@@ -23,13 +23,27 @@
 import os
 os.environ['XDG_RUNTIME_DIR'] = '/root'
 
+import argparse
+
 from dasbus.loop import EventLoop
 from dasbus.connection import SystemMessageBus
 
 from dnfdbus.dbus import DnfDbus
+from dnfdbus.misc import *
 
-loop = EventLoop()
-bus = SystemMessageBus()
-bus.publish_object("/dk/rasmil/DnfDbus", DnfDbus(loop))
-bus.register_service("dk.rasmil.DnfDbus")
-loop.run()
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Dnf D-Bus Daemon')
+    parser.add_argument('-v', '--verbose', action='store_true')
+    parser.add_argument('-d', '--debug', action='store_true')
+    args = parser.parse_args()
+    if args.verbose:
+        if args.debug:
+            do_log_setup(logroot='dnfdbus', loglvl=logging.DEBUG)
+        else:
+            do_log_setup(logroot='dnfdbus')
+    loop = EventLoop()
+    bus = SystemMessageBus()
+    bus.publish_object("/dk/rasmil/DnfDbus", DnfDbus(loop))
+    bus.register_service("dk.rasmil.DnfDbus")
+    loop.run()
