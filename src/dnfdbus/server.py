@@ -50,7 +50,7 @@ class DnfDbus(object):
         return f'Version : {VERSION}'
 
     def Quit(self) -> None:
-        self.working_start(None,write=False)
+        self.working_start(None,write=True)
         log.info("Quiting dk.rasmil.DnfDbus")
         self.loop.quit()
         self.working_ended()
