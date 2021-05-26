@@ -1,24 +1,19 @@
 from typing import List
+
 from dasbus.server.interface import dbus_interface
 from dasbus.connection import SystemMessageBus
 from dasbus.identifier import DBusServiceIdentifier
 from dasbus.error import ErrorMapper, get_error_decorator, DBusError
 from dasbus.loop import EventLoop
-
-from dasbus.typing import Str, UInt32, get_variant
-from dnfdbus.backend import DnfBackend
-from dnfdbus.client import DnfDbusClient
-from dnfdbus.misc import log
-from dnfdbus.polkit import check_permission, DBUS_SENDER
+from dasbus.typing import Str
 from dnf import Base
 
-import json
+from dnfdbus.backend import DnfBackend
+from dnfdbus.misc import log
+from dnfdbus.polkit import check_permission, DBUS_SENDER
 
-# org.freedesktop.PolicyKit1.Authority
-POLICYKIT = DBusServiceIdentifier(
-    namespace=("org", "freedesktop", "PolicyKit1"),
-    message_bus=SystemMessageBus()
-)
+
+import json
 
 VERSION = "1.0"
 
@@ -100,9 +95,4 @@ class DnfDbus(object):
             log.debug(f'PolicyKit1 {permission} : granted : {granted} sender: {DBUS_SENDER}')
             if granted:
                 self.authorized_sender_read.add(DBUS_SENDER)
-
-if __name__ == "__main__":
-    loop=EventLoop()
-    obj = DnfDbus(loop)
-    obj.check_permission_read('tla')
 
