@@ -63,6 +63,9 @@ class DnfPkg:
     def epoch(self):
         return self.pkg.epoch
 
+    @property    
+    def dump(self) -> Str:
+        return str(self.pkg)
 
 
 

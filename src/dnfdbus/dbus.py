@@ -30,6 +30,11 @@ class DnfDbus(object):
         repos = self.backend.get_repositories()
         return json.dumps([repo.dump for repo in repos])
 
+    def GetPackagesByKey(self, key: Str) -> Str:
+        log.debug("Starting GetPackagesByKey")
+        pkgs = self.backend.packages.by_key(key)
+        return json.dumps([pkg.dump for pkg in pkgs])
+
 if __name__ == "__main__":
     print(DnfDbus.__dbus_xml__)
 

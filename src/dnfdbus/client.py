@@ -3,6 +3,7 @@
 from typing import List
 from dasbus.connection import SystemMessageBus
 from dasbus.identifier import DBusServiceIdentifier
+from dasbus.typing import Str
 from gi.repository import GLib
 import json
 
@@ -18,6 +19,10 @@ class DnfRepo:
         self.name: str = None
         self.enabled:bool = None
         self.__dict__.update(attr)
+
+class DnfPkg:
+    def __init__(self, pkg: Str) -> None:
+        self.pkg = pkg
 
 # Classes
 class DnfDbusClient:
@@ -37,13 +42,16 @@ class DnfDbusClient:
         repos = json.loads(self.proxy.GetRepositories())
         return [DnfRepo(repo) for repo in repos]
 
+    def get_packages_by_key(self, key: Str) -> List:
+        pkgs = json.loads(self.proxy.GetPackagesByKey(key))
+        return [DnfPkg(pkg) for pkg in pkgs]
+
+
 
 if __name__ == "__main__":
     client = DnfDbusClient()
     print(client.get_version())
-    repos = client.get_repositories()
-    for repo in repos:
-        if repo.enabled:
-            print(f'{repo.id:50} : {repo.name}')
+    pkgs = client.get_packages_by_key("*qt6*")
+    print(pkgs)
     client.quit()
 
