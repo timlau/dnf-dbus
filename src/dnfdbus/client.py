@@ -24,6 +24,9 @@ class DnfPkg:
     def __init__(self, pkg: Str) -> None:
         self.pkg = pkg
 
+    def __repr__(self) -> str:
+        return f'DnfPkg({self.pkg})'
+        
 # Classes
 class DnfDbusClient:
     """Wrapper class for the dk.rasmil.DnfDbus Dbus object"""
@@ -46,12 +49,4 @@ class DnfDbusClient:
         pkgs = json.loads(self.proxy.GetPackagesByKey(key))
         return [DnfPkg(pkg) for pkg in pkgs]
 
-
-
-if __name__ == "__main__":
-    client = DnfDbusClient()
-    print(client.get_version())
-    pkgs = client.get_packages_by_key("*qt6*")
-    print(pkgs)
-    client.quit()
 
