@@ -73,9 +73,10 @@ class DnfDbusClient:
     def __init__(self):
         self.proxy = DNFDBUS.get_proxy()
 
-    def get_version(self) -> str:
+    @property
+    def version(self) -> str:
         """ Get the version from dk.rasmil.DnfDbus daemon"""
-        return self.proxy.Version()
+        return self.proxy.Version
 
     def quit(self) -> None:
         """ Quit the dk.rasmil.DnfDbus daemon"""

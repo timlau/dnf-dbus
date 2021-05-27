@@ -61,7 +61,8 @@ class AccessDeniedError(DBusError):
 # Only contains the CamelCase method there is published to DBus
 @dbus_interface(DNFDBUS.interface_name)
 class DnfDbusInterface(InterfaceTemplate):
-
+    
+    @property
     def Version(self) -> Str:
         ''' Get Version of DBUS Daemon'''
         return self.implementation.version()

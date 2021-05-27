@@ -23,7 +23,7 @@ from dnfdbus.client import DnfDbusClient
 if __name__ == "__main__":
     # Setup client to talk to the DnfDbus Backend
     client = DnfDbusClient()
-    print(client.get_version())
+    print(client.version)
 
     # Get packages matching at filter with wildcards
     pkgs = client.get_packages_by_key("*qt6-qtquick*")

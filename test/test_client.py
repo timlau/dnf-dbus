@@ -31,8 +31,9 @@ class TestClient(unittest.TestCase):
     def testDnfClient(self):
         client = DnfDbusClient()
         client.proxy = MagicMock()
-        client.get_version()
-        client.proxy.Version.assert_called
+        client.proxy.Version = '7.0'
+        ver = client.version
+        self.assertEqual(ver,'7.0')
         client.quit()
         client.proxy.Quit.assert_called
         client.proxy.GetRepositories.return_value = json.dumps([{'id': "repo-id", "name": "repo name", 'enabled': True}])
