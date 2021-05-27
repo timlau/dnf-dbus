@@ -23,6 +23,8 @@ import json
 from dasbus.server.interface import dbus_interface
 from dasbus.connection import SystemMessageBus
 from dasbus.identifier import DBusServiceIdentifier
+from dasbus.server.template import InterfaceTemplate
+from dasbus.server.publishable import Publishable
 from dasbus.error import ErrorMapper, get_error_decorator, DBusError
 from dasbus.loop import EventLoop
 from dasbus.typing import Str
@@ -55,8 +57,30 @@ dbus_error = get_error_decorator(ERROR_MAPPER)
 class AccessDeniedError(DBusError):
     pass
 
+# DBus interface
+# Only contains the CamelCase method there is published to DBus
 @dbus_interface(DNFDBUS.interface_name)
-class DnfDbus(object):
+class DnfDbusInterface(InterfaceTemplate):
+
+    def Version(self) -> Str:
+        ''' Get Version of DBUS Daemon'''
+        return self.implementation.version()
+
+    def Quit(self) -> None:
+        ''' Quit the DBUS Daemon'''
+        return self.implementation.quit()
+
+    def GetRepositories(self) -> Str:
+        ''' Get Repositories'''
+        return self.implementation.get_repositories()
+
+    def GetPackagesByKey(self, key: Str) -> Str:
+        ''' Get Backages by key '''
+        return self.implementation.get_packages_by_key(key)
+
+
+# Implementation of the DnfDbusInterface
+class DnfDbus(Publishable):
 
     def __init__(self, loop) -> None:
         super().__init__()
@@ -66,26 +90,30 @@ class DnfDbus(object):
         self.loop = loop
         self.backend = DnfBackend(Base())
 
-    def Version(self) -> Str:
+    def for_publication(self):
+        return DnfDbusInterface(self)
+
+# ========================= Interface Implementation ===================================
+    def version(self) -> Str:
         ''' Get Version of DBUS Daemon'''
-        log.debug("Starting Version")
+        log.debug(f"Starting Version ")
         return f'Version : {VERSION}'
 
-    def Quit(self) -> None:
+    def quit(self) -> None:
         ''' Quit the DBUS Daemon'''
         self.working_start(write=False)
         log.info("Quiting dk.rasmil.DnfDbus")
         self.loop.quit()
         self.working_ended()
 
-    def GetRepositories(self) -> Str:
+    def get_repositories(self) -> Str:
         ''' Get Repositories'''
         self.working_start(write=False)
         log.debug("Starting GetRepository")
         repos = self.backend.get_repositories()
         return self.working_ended(json.dumps([repo.dump for repo in repos]))
 
-    def GetPackagesByKey(self, key: Str) -> Str:
+    def get_packages_by_key(self, key: Str) -> Str:
         ''' Get Backages by key '''
         self.working_start(write=False)
         log.debug("Starting GetPackagesByKey")

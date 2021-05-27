@@ -24,7 +24,7 @@ import argparse
 from dasbus.loop import EventLoop
 
 from dnfdbus.misc import do_log_setup, log
-from dnfdbus.server import DnfDbus, SYSTEM_BUS, DNFDBUS
+from dnfdbus.server import DnfDbus, DnfDbusInterface, SYSTEM_BUS, DNFDBUS
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Dnf D-Bus Daemon')
@@ -38,8 +38,9 @@ if __name__ == "__main__":
             do_log_setup(logroot='dnfdbus')
     try:                    
         loop = EventLoop()
+
         log.info(f'Starting {DNFDBUS.object_path} : {DNFDBUS.service_name}')
-        SYSTEM_BUS.publish_object(DNFDBUS.object_path, DnfDbus(loop))
+        SYSTEM_BUS.publish_object(DNFDBUS.object_path, DnfDbusInterface(DnfDbus(loop)))
         SYSTEM_BUS.register_service(DNFDBUS.service_name)
         loop.run()
     finally:
