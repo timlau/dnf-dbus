@@ -1,4 +1,8 @@
+
+""" Module for DBus Backend Daemon """
+
 from typing import List
+import json
 
 from dasbus.server.interface import dbus_interface
 from dasbus.connection import SystemMessageBus
@@ -15,25 +19,23 @@ from dnfdbus.polkit import check_permission, DBUS_SENDER
 # Constants
 SYSTEM_BUS = SystemMessageBus()
 
+DNFDBUS_NAMESPACE = ("dk", "rasmil", "DnfDbus")
+
 DNFDBUS = DBusServiceIdentifier(
-    namespace=("dk", "rasmil", "DnfDbus"),
+    namespace=DNFDBUS_NAMESPACE,
     message_bus=SYSTEM_BUS
 )
-
-
-
-import json
 
 VERSION = "1.0"
 
 # Create an error mapper.
-error_mapper = ErrorMapper()
+ERROR_MAPPER = ErrorMapper()
 
 # Create a decorator for DBus errors and use it to map
 # the class ExampleError to the name my.example.Error.
-dbus_error = get_error_decorator(error_mapper)
+dbus_error = get_error_decorator(ERROR_MAPPER)
 
-@dbus_error("dk.rasmil.DnfDbus.Error")
+@dbus_error("AccessDeniedError", namespace=DNFDBUS_NAMESPACE)
 class AccessDeniedError(DBusError):
     pass
 
@@ -49,22 +51,26 @@ class DnfDbus(object):
         self.backend = DnfBackend(Base())
 
     def Version(self) -> Str:
+        ''' Get Version of DBUS Daemon'''
         log.debug("Starting Version")
         return f'Version : {VERSION}'
 
     def Quit(self) -> None:
+        ''' Quit the DBUS Daemon'''
         self.working_start(write=False)
         log.info("Quiting dk.rasmil.DnfDbus")
         self.loop.quit()
         self.working_ended()
 
     def GetRepositories(self) -> Str:
+        ''' Get Repositories'''
         self.working_start(write=False)
         log.debug("Starting GetRepository")
         repos = self.backend.get_repositories()
         return self.working_ended(json.dumps([repo.dump for repo in repos]))
 
     def GetPackagesByKey(self, key: Str) -> Str:
+        ''' Get Backages by key '''
         self.working_start(write=False)
         log.debug("Starting GetPackagesByKey")
         pkgs = self.backend.packages.by_key(key)
@@ -73,6 +79,7 @@ class DnfDbus(object):
 # ======================= Helpers ====================================
 
     def working_start(self,  write=True):
+        ''' Check permission and set work is being done flag '''
         if write:
             self.check_permission_write()
         else:
@@ -80,6 +87,7 @@ class DnfDbus(object):
         self._is_working = True
 
     def working_ended(self, value=None):
+        ''' Release work is being done flag and return the passed value '''
         self._is_working = False
         return value
 
@@ -93,6 +101,8 @@ class DnfDbus(object):
             log.debug(f'PolicyKit1 {permission} : granted : {granted} sender: {DBUS_SENDER}')
             if granted:
                 self.authorized_sender_write.add(DBUS_SENDER)
+            else:
+                raise AccessDeniedError
 
     def check_permission_read(self):
         """ Check for senders permission to read system packages"""
@@ -104,4 +114,6 @@ class DnfDbus(object):
             log.debug(f'PolicyKit1 {permission} : granted : {granted} sender: {DBUS_SENDER}')
             if granted:
                 self.authorized_sender_read.add(DBUS_SENDER)
+            else:
+                raise AccessDeniedError
 

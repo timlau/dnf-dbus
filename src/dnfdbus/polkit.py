@@ -1,3 +1,9 @@
+""" Module for PolicyKit Authentication 
+
+Use Legacy python dbus, because dasbus don’t work with PolicyKit1
+
+"""
+
 import dbus
 
 bus = dbus.SystemBus()

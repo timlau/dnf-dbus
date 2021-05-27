@@ -1,3 +1,5 @@
+""" Module with Misc. helper funtions and other stuff"""
+
 import logging
 import sys
 import re
@@ -8,6 +10,7 @@ NEVRA_RE = re.compile(r'([a-z0-9_\-]*)(-([0-9]*):|-)([0-9\.]*)-([0-9a-z\.]*)\.([
 
 
 def to_nevra(pkg):
+    ''' convert pkg string to NEVRA (Name, Epoch, Version, Release, Arch) '''
     match = NEVRA_RE.search(pkg)
     n = match.group(1)
     if match.group(3):
