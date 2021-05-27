@@ -82,6 +82,10 @@ test-upd:
 	@$(MAKE) test-release
 	sudo dnf update -y $(BUILDDIR)/RPMS/noarch/*.rpm
 
+start-service:
+	sudo PYTHONPATH=$(TESTLIBS) python3 daemon/dnfdbus -v -d
+
+
 PNONY: run-tests selinux install build-setup test-release test-cleanup show-vars test-reinst test-upd
 
 
