@@ -74,7 +74,14 @@ test-release:
 	@-rpmbuild --define '_topdir $(BUILDDIR)' -ba ${PKGNAME}.spec
 	@$(MAKE) test-cleanup
 
+test-reinst:
+	@$(MAKE) test-release
+	sudo dnf reinstall -y $(BUILDDIR)/RPMS/noarch/*.rpm
 
-PNONY: run-tests selinux install build-setup test-release test-cleanup show-vars
+test-upd:
+	@$(MAKE) test-release
+	sudo dnf update -y $(BUILDDIR)/RPMS/noarch/*.rpm
+
+PNONY: run-tests selinux install build-setup test-release test-cleanup show-vars test-reinst test-upd
 
 
