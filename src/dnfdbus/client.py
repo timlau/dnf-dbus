@@ -22,50 +22,41 @@ from dasbus.connection import SystemMessageBus
 
 """ Module for client code to talk with the DBus Backend daemon"""
 
+from dataclasses import dataclass
+
 from dasbus.identifier import DBusServiceIdentifier
 
 from dnfdbus.misc import to_nevra
 from dnfdbus.server import SYSTEM_BUS, DNFDBUS
 
-
+@dataclass(repr=True)
 class DnfRepo:
     """ Wrapper class for a dnf repository"""
+    id: str
+    name: str
+    enabled: bool
+
     def __init__(self, attr: Dict) -> None:
-        self.id:str = None
-        self.name: str = None
-        self.enabled:bool = None
         self.__dict__.update(attr)
 
+@dataclass
 class DnfPkg:
     """ Wrapper class for a dnf package"""
+    name: str
+    epoch: str
+    version: str
+    release: str
+    arch: str
+
     def __init__(self, pkg: str) -> None:
-        self.n,self.e,self.v,self.r,self.a = to_nevra(pkg)
+        self.name,self.epoch,self.version,self.release,self.arch = to_nevra(pkg)
 
     def __repr__(self) -> str:
-        if self.e == '0':
-            return f'{self.n}-{self.v}-{self.r}.{self.a}'
+        if self.epoch == '0':
+            return f'{self.name}-{self.version}-{self.release}.{self.arch}'
         else:
-            return f'{self.n}-{self.e}:{self.v}-{self.r}.{self.a}'
+            return f'{self.name}-{self.epoch}:{self.version}-{self.release}.{self.arch}'
 
-    @property
-    def name(self)-> str:
-        return self.n
-
-    @property
-    def version(self)-> str:
-        return self.v
-
-    @property
-    def release(self)-> str:
-        return self.r
-
-    @property
-    def arch(self)-> str:
-        return self.a
-
-    @property
-    def epoch(self)-> str:
-        return self.e
 
 # Classes
 class DnfDbusClient:
