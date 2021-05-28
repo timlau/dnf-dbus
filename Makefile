@@ -38,6 +38,10 @@ install:
 	install -m644 policykit1/$(ORG_NAME).policy $(DESTDIR)$(DATADIR)/polkit-1/actions/.				
 	install -m755 daemon/dnfdbus $(DESTDIR)/$(PKGDIR)/dnfdbus
 
+clean:
+	@rm -rf build/  &>/dev/null ||:
+
+
 selinux:
 	@$(MAKE) install
 	semanage fcontext -a -t rpm_exec_t $(DESTDIR)/$(PKGDIR)/dnfdbus
@@ -87,5 +91,6 @@ start-service:
 
 
 PNONY: run-tests selinux install build-setup test-release test-cleanup show-vars test-reinst test-upd
+PNONY: clean
 
 
