@@ -36,11 +36,12 @@ if __name__ == "__main__":
             do_log_setup(logroot='dnfdbus', loglvl=logging.DEBUG)
         else:
             do_log_setup(logroot='dnfdbus')
-    try:                    
+    try:
         loop = EventLoop()
 
         log.info(f'Starting {DNFDBUS.object_path} : {DNFDBUS.service_name}')
-        SYSTEM_BUS.publish_object(DNFDBUS.object_path, DnfDbusInterface(DnfDbus(loop)))
+        SYSTEM_BUS.publish_object(
+            DNFDBUS.object_path, DnfDbusInterface(DnfDbus(loop)))
         SYSTEM_BUS.register_service(DNFDBUS.service_name)
         loop.run()
     finally:

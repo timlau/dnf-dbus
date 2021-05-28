@@ -23,7 +23,8 @@ import re
 
 log = logging.getLogger('dnfdbus.common')
 
-NEVRA_RE = re.compile(r'([a-z0-9_\-]*)(-([0-9]*):|-)([0-9\.]*)-([0-9a-z\.]*)\.([a-z0-9_]*)$',re.IGNORECASE)
+NEVRA_RE = re.compile(
+    r'([a-z0-9_\-]*)(-([0-9]*):|-)([0-9\.]*)-([0-9a-z\.]*)\.([a-z0-9_]*)$', re.IGNORECASE)
 
 
 def to_nevra(pkg):
@@ -38,7 +39,7 @@ def to_nevra(pkg):
     r = match.group(5)
     a = match.group(6)
     #print(f'{n=} {e=} {v=} {r=} {a=}')
-    return n,e,v,r,a
+    return n, e, v, r, a
 
 
 def logger(func):
@@ -58,7 +59,7 @@ def logger(func):
 
 
 def do_log_setup(logroot='dnfdbus', logfmt='%(asctime)s: %(message)s',
-                      loglvl=logging.INFO):
+                 loglvl=logging.INFO):
     """Setup Python logging."""
     log = logging.getLogger(logroot)
     log.setLevel(loglvl)

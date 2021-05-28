@@ -1,4 +1,8 @@
 """ Client API Module"""
+from dnfdbus.server import SYSTEM_BUS, DNFDBUS
+from dnfdbus.misc import to_nevra
+from dasbus.identifier import DBusServiceIdentifier
+from dataclasses import dataclass
 import json
 from typing import List, Dict
 
@@ -22,12 +26,6 @@ from dasbus.connection import SystemMessageBus
 
 """ Module for client code to talk with the DBus Backend daemon"""
 
-from dataclasses import dataclass
-
-from dasbus.identifier import DBusServiceIdentifier
-
-from dnfdbus.misc import to_nevra
-from dnfdbus.server import SYSTEM_BUS, DNFDBUS
 
 @dataclass(repr=True)
 class DnfRepo:
@@ -39,6 +37,7 @@ class DnfRepo:
     def __init__(self, attr: Dict) -> None:
         self.__dict__.update(attr)
 
+
 @dataclass
 class DnfPkg:
     """ Wrapper class for a dnf package"""
@@ -49,7 +48,8 @@ class DnfPkg:
     arch: str
 
     def __init__(self, pkg: str) -> None:
-        self.name,self.epoch,self.version,self.release,self.arch = to_nevra(pkg)
+        self.name, self.epoch, self.version, self.release, self.arch = to_nevra(
+            pkg)
 
     def __repr__(self) -> str:
         if self.epoch == '0':
@@ -57,10 +57,14 @@ class DnfPkg:
         else:
             return f'{self.name}-{self.epoch}:{self.version}-{self.release}.{self.arch}'
 
+    def __str__(self) -> str:
+        return self.__repr__()
+
 
 # Classes
 class DnfDbusClient:
     """Wrapper class for the dk.rasmil.DnfDbus Dbus object"""
+
     def __init__(self):
         self.proxy = DNFDBUS.get_proxy()
 
@@ -82,5 +86,3 @@ class DnfDbusClient:
         """ Get packages that matches a key """
         pkgs = json.loads(self.proxy.GetPackagesByKey(key))
         return [DnfPkg(pkg) for pkg in pkgs]
-
-

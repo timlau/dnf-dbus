@@ -23,6 +23,7 @@ import json
 from typing import Dict
 import dnf
 
+
 class DnfRepository:
     """
     Wrapper for the dnf.repo.Repo class
@@ -38,19 +39,19 @@ class DnfRepository:
     @property
     def name(self):
         return self.repo.name
-    
+
     @property
     def enabled(self):
         return self.repo.enabled
 
-    @property    
+    @property
     def dump(self) -> Dict:
-        return  {'id': self.id, 'name': self.name, 'enabled': self.enabled}
-        
+        return {'id': self.id, 'name': self.name, 'enabled': self.enabled}
+
 
 class DnfPkg:
     """ Wrapper for dnf po"""
-    
+
     def __init__(self, pkg) -> None:
         self.pkg = pkg
 
@@ -80,18 +81,17 @@ class DnfPkg:
     def epoch(self):
         return self.pkg.epoch
 
-    @property    
+    @property
     def dump(self) -> str:
         return str(self.pkg)
 
 
-
 class DnfPackages:
 
-    def __init__(self, backend ) -> None:
+    def __init__(self, backend) -> None:
         self.backend = backend
         self.base = backend.base
-        
+
     @property
     def installed(self):
         ''' Get list of installed packages'''
@@ -122,6 +122,7 @@ class DnfPackages:
         q = subject.get_best_query(self.base.sack)
         return [DnfPkg(pkg) for pkg in q]
 
+
 class DnfBackend:
 
     def __init__(self, base) -> None:
@@ -144,7 +145,6 @@ class DnfBackend:
             _ = self.base.fill_sack_from_repos_in_cache()
             self.is_setup = True
 
-
     def get_repositories(self) -> list:
         ''' Get list of repositories'''
         self.setup()
@@ -157,4 +157,3 @@ if __name__ == "__main__":
     res = pkgs.by_key("*qt6*")
     for pkg in res:
         print(f'    "{str(pkg)}",')
-    

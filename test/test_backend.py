@@ -22,7 +22,7 @@ TEST_PKGS = [
     "NetworkManager-bluetooth-1:1.30.4-1.fc34.x86_64",
 ]
 
-TEST_PKG_LIST = [DnfPkg(pkg) for pkg in TEST_PKGS]        
+TEST_PKG_LIST = [DnfPkg(pkg) for pkg in TEST_PKGS]
 
 # define the allowed method of the Dnf Base Mock
 DNF_MOCK_SPEC = [
@@ -31,6 +31,7 @@ DNF_MOCK_SPEC = [
     'fill_sack_from_repos_in_cache',
     'sack'
 ]
+
 
 def dnf_mock():
     """ Setup at dnf.Base Mock"""
@@ -49,6 +50,7 @@ def dnf_mock():
     repo3.enabled = False
     base.repos = {"id1": repo1, "id2": repo2, "id3": repo3}
     return base
+
 
 class TestRepository(unittest.TestCase):
 
@@ -106,38 +108,37 @@ class TestDnfBackend(unittest.TestCase):
         inst = pkgs.installed
         self.assertIsInstance(inst, list)
         self.assertEqual(len(inst), 10)
-        pkg = inst[0] # AtomicParsley-0.9.5-17.fc34.x86_64
+        pkg = inst[0]  # AtomicParsley-0.9.5-17.fc34.x86_64
         self.assertIsInstance(pkg, backend.DnfPkg)
-        self.assertEqual(pkg.name,'AtomicParsley')
-        self.assertEqual(pkg.version,'0.9.5')
-        self.assertEqual(pkg.release,'17.fc34')
-        self.assertEqual(pkg.arch,'x86_64')
-        self.assertEqual(pkg.epoch,'0')
+        self.assertEqual(pkg.name, 'AtomicParsley')
+        self.assertEqual(pkg.version, '0.9.5')
+        self.assertEqual(pkg.release, '17.fc34')
+        self.assertEqual(pkg.arch, 'x86_64')
+        self.assertEqual(pkg.epoch, '0')
 
     def test_pkg_available(self):
         self.base.sack.query().available().latest.return_value = TEST_PKG_LIST
         pkgs = self.backend.packages
         inst = pkgs.available
-        #print(f'{inst=}')
+        # print(f'{inst=}')
         self.assertIsInstance(inst, list)
         self.assertEqual(len(inst), 10)
-        pkg = inst[0] # AtomicParsley-0.9.5-17.fc34.x86_64
+        pkg = inst[0]  # AtomicParsley-0.9.5-17.fc34.x86_64
         self.assertIsInstance(pkg, backend.DnfPkg)
-        self.assertEqual(pkg.name,'AtomicParsley')
-        self.assertEqual(pkg.version,'0.9.5')
-        self.assertEqual(pkg.release,'17.fc34')
-        self.assertEqual(pkg.arch,'x86_64')
-        self.assertEqual(pkg.epoch,'0')
-    
+        self.assertEqual(pkg.name, 'AtomicParsley')
+        self.assertEqual(pkg.version, '0.9.5')
+        self.assertEqual(pkg.release, '17.fc34')
+        self.assertEqual(pkg.arch, 'x86_64')
+        self.assertEqual(pkg.epoch, '0')
+
     @patch('dnf.subject.Subject')
     def test_pkg_by_key(self, mock_sbj):
         mock_sbj().get_best_query.return_value = TEST_PKG_LIST
         pkgs = self.backend.packages
-        res = pkgs.by_key("*qt6*") 
+        res = pkgs.by_key("*qt6*")
         # dnf.subject.Subject method calls
         mock_sbj.assert_called_with('*qt6*')
         mock_sbj().get_best_query.assert_called()
         # returns list of DnfPkg
         self.assertIsInstance(res, list)
         self.assertIsInstance(res[0], backend.DnfPkg)
-

@@ -1,4 +1,3 @@
 """
 dnfdbus module
 """
-

@@ -53,15 +53,18 @@ ERROR_MAPPER = ErrorMapper()
 # the class ExampleError to the name my.example.Error.
 dbus_error = get_error_decorator(ERROR_MAPPER)
 
+
 @dbus_error("AccessDeniedError", namespace=DNFDBUS_NAMESPACE)
 class AccessDeniedError(DBusError):
     pass
 
 # DBus interface
 # Only contains the CamelCase method there is published to DBus
+
+
 @dbus_interface(DNFDBUS.interface_name)
 class DnfDbusInterface(InterfaceTemplate):
-    
+
     @property
     def Version(self) -> Str:
         ''' Get Version of DBUS Daemon'''
@@ -143,7 +146,8 @@ class DnfDbus(Publishable):
         else:
             permission = 'dk.rasmil.DnfDbus.write'
             granted = check_permission(permission)
-            log.debug(f'PolicyKit1 {permission} : granted : {granted} sender: {DBUS_SENDER}')
+            log.debug(
+                f'PolicyKit1 {permission} : granted : {granted} sender: {DBUS_SENDER}')
             if granted:
                 self.authorized_sender_write.add(DBUS_SENDER)
             else:
@@ -156,9 +160,9 @@ class DnfDbus(Publishable):
         else:
             permission = 'dk.rasmil.DnfDbus.read'
             granted = check_permission(permission)
-            log.debug(f'PolicyKit1 {permission} : granted : {granted} sender: {DBUS_SENDER}')
+            log.debug(
+                f'PolicyKit1 {permission} : granted : {granted} sender: {DBUS_SENDER}')
             if granted:
                 self.authorized_sender_read.add(DBUS_SENDER)
             else:
                 raise AccessDeniedError
-
