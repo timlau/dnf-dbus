@@ -125,8 +125,8 @@ class DnfPackages:
 
 class DnfBackend:
 
-    def __init__(self, base) -> None:
-        self.base = base
+    def __init__(self, base=None) -> None:
+        self.base = base or dnf.Base()
         self.is_setup = False
         self._packages = None
 

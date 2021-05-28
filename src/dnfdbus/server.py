@@ -28,7 +28,6 @@ from dasbus.server.publishable import Publishable
 from dasbus.error import ErrorMapper, get_error_decorator, DBusError
 from dasbus.loop import EventLoop
 from dasbus.typing import Str
-from dnf import Base
 
 from dnfdbus.backend import DnfBackend
 from dnfdbus.misc import log
@@ -102,7 +101,7 @@ class DnfDbus(Publishable):
         self.authorized_sender_write = set()
         self._is_working = False
         self.loop = loop
-        self.backend = DnfBackend(Base())
+        self.backend = DnfBackend()
 
     def for_publication(self):
         return DnfDbusInterface(self)
