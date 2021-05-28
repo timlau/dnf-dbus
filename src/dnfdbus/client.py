@@ -20,7 +20,6 @@
 
 import json
 from dataclasses import dataclass
-from typing import Dict, List
 
 from dasbus.connection import SystemMessageBus
 from dasbus.identifier import DBusServiceIdentifier
@@ -36,7 +35,7 @@ class DnfRepo:
     name: str
     enabled: bool
 
-    def __init__(self, attr: Dict) -> None:
+    def __init__(self, attr: dict) -> None:
         self.__dict__.update(attr)
 
 
@@ -64,6 +63,22 @@ class DnfPkg:
 
 
 # Classes
+
+class DnfDbusSignals:
+    SIGNALS = ['Message', 'Progress']
+
+    def __init__(self, proxy=None):
+        self.proxy = proxy or DNFDBUS.get_proxy()
+        self.proxy.Message.connect(self.message)
+        self.proxy.Progress.connect(self.progress)
+
+    def message(self, msg: str):
+        print(f'Message: {msg=}')
+
+    def progress(self, msg: str, fraction: float):
+        print(f'Progress: {msg=} {fraction=}')
+
+
 class DnfDbusClient:
     """Wrapper class for the dk.rasmil.DnfDbus Dbus object"""
 
@@ -79,12 +94,12 @@ class DnfDbusClient:
         """ Quit the dk.rasmil.DnfDbus daemon"""
         self.proxy.Quit()
 
-    def get_repositories(self) -> List:
+    def get_repositories(self) -> list:
         """ Get all configured repositories """
         repos = json.loads(self.proxy.GetRepositories())
         return [DnfRepo(repo) for repo in repos]
 
-    def get_packages_by_key(self, key: str) -> List:
+    def get_packages_by_key(self, key: str) -> list:
         """ Get packages that matches a key """
         pkgs = json.loads(self.proxy.GetPackagesByKey(key))
         return [DnfPkg(pkg) for pkg in pkgs]

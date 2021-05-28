@@ -19,18 +19,19 @@
 
 import json
 
-from dasbus.server.interface import dbus_interface, dbus_signal
 from dasbus.connection import SystemMessageBus
+from dasbus.error import DBusError, ErrorMapper, get_error_decorator
 from dasbus.identifier import DBusServiceIdentifier
-from dasbus.server.template import InterfaceTemplate
-from dasbus.server.publishable import Publishable
-from dasbus.error import ErrorMapper, get_error_decorator, DBusError
 from dasbus.loop import EventLoop
-from dasbus.typing import Str
+from dasbus.server.interface import dbus_interface, dbus_signal
+from dasbus.server.publishable import Publishable
+from dasbus.server.template import InterfaceTemplate
+from dasbus.signal import Signal
+from dasbus.typing import Str, Double
 
 from dnfdbus.backend import DnfBackend
 from dnfdbus.misc import log
-from dnfdbus.polkit import check_permission, DBUS_SENDER
+from dnfdbus.polkit import DBUS_SENDER, check_permission
 
 # Constants
 SYSTEM_BUS = SystemMessageBus()
@@ -63,6 +64,11 @@ class AccessDeniedError(DBusError):
 @dbus_interface(DNFDBUS.interface_name)
 class DnfDbusInterface(InterfaceTemplate):
 
+    def connect_signals(self):
+        """Connect the signals."""
+        self.implementation.signal_message.connect(self.Message)
+        self.implementation.signal_progress.connect(self.Progress)
+
     @property
     def Version(self) -> Str:
         ''' Get Version of DBUS Daemon'''
@@ -80,12 +86,15 @@ class DnfDbusInterface(InterfaceTemplate):
         ''' Get Backages by key '''
         return self.implementation.get_packages_by_key(key)
 
+    def TestSignals(self) -> None:
+        return self.implementation.test_signals()
+
     @dbus_signal
-    def Message(msg: Str):  # type: ignore
+    def Message(self, msg: Str):  # type: ignore
         pass
 
     @dbus_signal
-    def Progress(msg: Str, fraction: float):  # type: ignore
+    def Progress(self, msg: Str, fraction: Double):  # type: ignore
         pass
 
 
@@ -101,9 +110,19 @@ class DnfDbus(Publishable):
         self._is_working = False
         self.loop = loop
         self.backend = DnfBackend()
+        self._signal_message = Signal()
+        self._signal_progress = Signal()
 
     def for_publication(self):
         return DnfDbusInterface(self)
+
+    @property
+    def signal_message(self):
+        return self._signal_message
+
+    @property
+    def signal_progress(self):
+        return self._signal_progress
 
 # ========================= Interface Implementation ===================================
     def version(self) -> Str:
@@ -132,7 +151,14 @@ class DnfDbus(Publishable):
         pkgs = self.backend.packages.by_key(key)
         return self.working_ended(json.dumps([pkg.dump for pkg in pkgs]))
 
+    def test_signals(self):
+        log.debug(f"Starting TestSignals")
+        self.signal_progress.emit("progress", .5)
+        self.signal_message.emit("some message")
+
+
 # ======================= Helpers ====================================
+
 
     def working_start(self,  write=True):
         ''' Check permission and set work is being done flag '''
