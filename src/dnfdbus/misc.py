@@ -64,6 +64,6 @@ def do_log_setup(logroot='dnfdbus', logfmt='%(asctime)s: %(message)s',
     log.setLevel(loglvl)
     formatter = logging.Formatter(logfmt, "%H:%M:%S")
     handler = logging.StreamHandler(stream=sys.stdout)
-    handler .setFormatter(formatter)
-    handler.propagate = False
+    handler.setFormatter(formatter)
+    log.propagate = False
     log.addHandler(handler)
