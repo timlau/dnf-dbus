@@ -89,8 +89,10 @@ test-upd:
 start-service:
 	sudo PYTHONPATH=$(TESTLIBS) python3 daemon/dnfdbus -v -d
 
+run-devtest:
+	sudo PYTHONPATH=$(TESTLIBS) python3 examples/backend/devtest.py
 
 PNONY: run-tests selinux install build-setup test-release test-cleanup show-vars test-reinst test-upd
-PNONY: clean
+PNONY: clean run-devtest
 
 
