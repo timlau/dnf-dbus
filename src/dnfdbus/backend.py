@@ -149,11 +149,3 @@ class DnfBackend:
         ''' Get list of repositories'''
         self.setup()
         return [DnfRepository(self.base.repos[repo]) for repo in self.base.repos]
-
-
-if __name__ == "__main__":
-    b = DnfBackend(dnf.Base())
-    pkgs = b.packages
-    res = pkgs.by_key("*qt6*")
-    for pkg in res:
-        print(f'    "{str(pkg)}",')
