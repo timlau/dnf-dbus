@@ -18,13 +18,12 @@
 
 # dnf dBus service
 
-import logging
 import argparse
+import logging
 
 from dasbus.loop import EventLoop
-
 from dnfdbus.misc import do_log_setup, log
-from dnfdbus.server import DnfDbus, DnfDbusInterface, SYSTEM_BUS, DNFDBUS
+from dnfdbus.server import DNFDBUS, SYSTEM_BUS, DnfDbus, DnfDbusInterface
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Dnf D-Bus Daemon')

@@ -17,7 +17,6 @@
 
 """ Module for DBus Backend Daemon """
 
-from typing import List
 import json
 
 from dasbus.server.interface import dbus_interface, dbus_signal
@@ -82,11 +81,11 @@ class DnfDbusInterface(InterfaceTemplate):
         return self.implementation.get_packages_by_key(key)
 
     @dbus_signal
-    def Message(msg: Str):
+    def Message(msg: Str):  # type: ignore
         pass
 
     @dbus_signal
-    def Progress(msg: Str, fraction: float):
+    def Progress(msg: Str, fraction: float):  # type: ignore
         pass
 
 

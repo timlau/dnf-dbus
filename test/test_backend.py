@@ -1,13 +1,11 @@
 """ Unit Test for dnfdbus.backend """
 
-import unittest
 import re
+import unittest
 from unittest.mock import MagicMock, Mock, patch
 
-from dnf import query, subject
-import dnfdbus.backend as backend
-from dnfdbus.client import DnfPkg
-
+import dnfdbus.client as client
+from dnfdbus.backend import DnfBackend, DnfPkg, DnfRepository
 
 TEST_PKGS = [
     "AtomicParsley-0.9.5-17.fc34.x86_64",
@@ -22,7 +20,7 @@ TEST_PKGS = [
     "NetworkManager-bluetooth-1:1.30.4-1.fc34.x86_64",
 ]
 
-TEST_PKG_LIST = [DnfPkg(pkg) for pkg in TEST_PKGS]
+TEST_PKG_LIST = [client.DnfPkg(pkg) for pkg in TEST_PKGS]
 
 # define the allowed method of the Dnf Base Mock
 DNF_MOCK_SPEC = [
@@ -59,7 +57,7 @@ class TestRepository(unittest.TestCase):
         self.mock.id = "id"
         self.mock.enabled = True
         self.mock.name = "name"
-        self.repo = backend.DnfRepository(self.mock)
+        self.repo = DnfRepository(self.mock)
 
     def tearDown(self):
         pass
@@ -77,7 +75,7 @@ class TestDnfBackend(unittest.TestCase):
 
     def setUp(self):
         self.base = dnf_mock()
-        self.backend = backend.DnfBackend(self.base)
+        self.backend = DnfBackend(self.base)
 
     def tearDown(self):
         pass
@@ -109,7 +107,7 @@ class TestDnfBackend(unittest.TestCase):
         self.assertIsInstance(inst, list)
         self.assertEqual(len(inst), 10)
         pkg = inst[0]  # AtomicParsley-0.9.5-17.fc34.x86_64
-        self.assertIsInstance(pkg, backend.DnfPkg)
+        self.assertIsInstance(pkg, DnfPkg)
         self.assertEqual(pkg.name, 'AtomicParsley')
         self.assertEqual(pkg.version, '0.9.5')
         self.assertEqual(pkg.release, '17.fc34')
@@ -124,7 +122,7 @@ class TestDnfBackend(unittest.TestCase):
         self.assertIsInstance(inst, list)
         self.assertEqual(len(inst), 10)
         pkg = inst[0]  # AtomicParsley-0.9.5-17.fc34.x86_64
-        self.assertIsInstance(pkg, backend.DnfPkg)
+        self.assertIsInstance(pkg, DnfPkg)
         self.assertEqual(pkg.name, 'AtomicParsley')
         self.assertEqual(pkg.version, '0.9.5')
         self.assertEqual(pkg.release, '17.fc34')
@@ -141,4 +139,4 @@ class TestDnfBackend(unittest.TestCase):
         mock_sbj().get_best_query.assert_called()
         # returns list of DnfPkg
         self.assertIsInstance(res, list)
-        self.assertIsInstance(res[0], backend.DnfPkg)
+        self.assertIsInstance(res[0], DnfPkg)

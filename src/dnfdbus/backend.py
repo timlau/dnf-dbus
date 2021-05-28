@@ -18,9 +18,9 @@
 """
 dnfdbus.dnf module
 """
-import sys
 import json
-from typing import Dict
+import sys
+
 import dnf
 
 
@@ -45,7 +45,7 @@ class DnfRepository:
         return self.repo.enabled
 
     @property
-    def dump(self) -> Dict:
+    def dump(self) -> dict:
         return {'id': self.id, 'name': self.name, 'enabled': self.enabled}
 
 

@@ -1,6 +1,5 @@
-import unittest
 import re
-
+import unittest
 from unittest.mock import MagicMock, Mock, patch
 
 from dnfdbus.misc import to_nevra

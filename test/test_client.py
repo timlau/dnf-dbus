@@ -1,9 +1,8 @@
-import unittest
 import json
-
+import unittest
 from unittest.mock import MagicMock, Mock, patch
 
-from dnfdbus.client import DnfDbusClient, DnfRepo, DnfPkg
+from dnfdbus.client import DnfDbusClient, DnfPkg, DnfRepo
 
 
 class TestClient(unittest.TestCase):

@@ -1,12 +1,3 @@
-""" Client API Module"""
-from dnfdbus.server import SYSTEM_BUS, DNFDBUS
-from dnfdbus.misc import to_nevra
-from dasbus.identifier import DBusServiceIdentifier
-from dataclasses import dataclass
-import json
-from typing import List, Dict
-
-from dasbus.connection import SystemMessageBus
 #    Copyright (C) 2021 Tim Lauridsen < tla[at]rasmil.dk >
 #
 #    This program is free software; you can redistribute it and/or modify
@@ -25,6 +16,17 @@ from dasbus.connection import SystemMessageBus
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
 """ Module for client code to talk with the DBus Backend daemon"""
+
+
+import json
+from dataclasses import dataclass
+from typing import Dict, List
+
+from dasbus.connection import SystemMessageBus
+from dasbus.identifier import DBusServiceIdentifier
+
+from dnfdbus.misc import to_nevra
+from dnfdbus.server import DNFDBUS, SYSTEM_BUS
 
 
 @dataclass(repr=True)

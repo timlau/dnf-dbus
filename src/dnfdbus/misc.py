@@ -18,8 +18,8 @@
 """ Module with Misc. helper funtions and other stuff"""
 
 import logging
-import sys
 import re
+import sys
 
 log = logging.getLogger('dnfdbus.common')
 
