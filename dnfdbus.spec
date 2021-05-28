@@ -11,7 +11,7 @@ URL:            https://github.com/timlau/dnf-dbus
 Source0:        %{url}/releases/download/%{name}-%{version}/%{name}-%{version}.tar.xz
 
 BuildArch:      noarch
-BuildRequires:  python3-devel
+BuildRequires:  python3-devel >= 3.9
 BuildRequires:  make
 BuildRequires:  systemd
 
