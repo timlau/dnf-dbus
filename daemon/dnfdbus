@@ -41,7 +41,7 @@ if __name__ == "__main__":
 
         log.info(f'Starting {DNFDBUS.object_path} : {DNFDBUS.service_name}')
         SYSTEM_BUS.publish_object(
-            DNFDBUS.object_path, DnfDbusInterface(DnfDbus(loop)))
+            DNFDBUS.object_path, DnfDbus(loop).for_publication())
         SYSTEM_BUS.register_service(DNFDBUS.service_name)
         loop.run()
     finally:
