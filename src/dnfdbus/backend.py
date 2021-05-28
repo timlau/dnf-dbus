@@ -118,7 +118,7 @@ class DnfPackages:
     def by_key(self, key):
         """ find packages the match a key (Ex. '*qt6*') """
         self.backend.setup()
-        subject = dnf.subject.Subject(key)
+        subject = dnf.subject.Subject(key)  # type: ignore
         q = subject.get_best_query(self.base.sack)
         return [DnfPkg(pkg) for pkg in q]
 
