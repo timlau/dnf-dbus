@@ -20,7 +20,7 @@
 from typing import List
 import json
 
-from dasbus.server.interface import dbus_interface
+from dasbus.server.interface import dbus_interface, dbus_signal
 from dasbus.connection import SystemMessageBus
 from dasbus.identifier import DBusServiceIdentifier
 from dasbus.server.template import InterfaceTemplate
@@ -82,8 +82,18 @@ class DnfDbusInterface(InterfaceTemplate):
         ''' Get Backages by key '''
         return self.implementation.get_packages_by_key(key)
 
+    @dbus_signal
+    def Message(msg: Str):
+        pass
+
+    @dbus_signal
+    def Progress(msg: Str, fraction: float):
+        pass
+
 
 # Implementation of the DnfDbusInterface
+
+
 class DnfDbus(Publishable):
 
     def __init__(self, loop) -> None:
