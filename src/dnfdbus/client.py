@@ -26,6 +26,7 @@ from dasbus.identifier import DBusServiceIdentifier
 
 from dnfdbus.misc import to_nevra
 from dnfdbus.server import DNFDBUS, SYSTEM_BUS
+from dasbus.loop import EventLoop
 
 
 @dataclass(repr=True)
@@ -67,16 +68,21 @@ class DnfPkg:
 class DnfDbusSignals:
     SIGNALS = ['Message', 'Progress']
 
-    def __init__(self, proxy=None):
-        self.proxy = proxy or DNFDBUS.get_proxy()
+    def __init__(self, loop: EventLoop):
+        self.proxy = DNFDBUS.get_proxy()
         self.proxy.Message.connect(self.message)
         self.proxy.Progress.connect(self.progress)
+        self.proxy.Quitting.connect(self.quitting)
+        self.loop = loop
 
     def message(self, msg: str):
         print(f'Message: {msg=}')
 
     def progress(self, msg: str, fraction: float):
         print(f'Progress: {msg=} {fraction=}')
+
+    def quitting(self):
+        self.loop.quit()
 
 
 class DnfDbusClient:

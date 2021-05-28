@@ -68,6 +68,7 @@ class DnfDbusInterface(InterfaceTemplate):
         """Connect the signals."""
         self.implementation.signal_message.connect(self.Message)
         self.implementation.signal_progress.connect(self.Progress)
+        self.implementation.signal_quitting.connect(self.Quitting)
 
     @property
     def Version(self) -> Str:
@@ -97,6 +98,9 @@ class DnfDbusInterface(InterfaceTemplate):
     def Progress(self, msg: Str, fraction: Double):  # type: ignore
         pass
 
+    @dbus_signal
+    def Quitting(self):  # type: ignore
+        pass
 
 # Implementation of the DnfDbusInterface
 
@@ -112,6 +116,7 @@ class DnfDbus(Publishable):
         self.backend = DnfBackend()
         self._signal_message = Signal()
         self._signal_progress = Signal()
+        self._signal_quitting = Signal()
 
     def for_publication(self):
         return DnfDbusInterface(self)
@@ -124,6 +129,10 @@ class DnfDbus(Publishable):
     def signal_progress(self):
         return self._signal_progress
 
+    @property
+    def signal_quiting(self):
+        return self._signal_quiting
+
 # ========================= Interface Implementation ===================================
     def version(self) -> Str:
         ''' Get Version of DBUS Daemon'''
@@ -134,6 +143,7 @@ class DnfDbus(Publishable):
         ''' Quit the DBUS Daemon'''
         self.working_start(write=False)
         log.info("Quiting dk.rasmil.DnfDbus")
+        self.signal_quiting.emit()
         self.loop.quit()
         self.working_ended()
 

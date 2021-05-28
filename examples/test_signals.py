@@ -3,7 +3,7 @@ from dasbus.loop import EventLoop
 
 if __name__ == "__main__":
     # Create listener that listen to signals from backend
-    listener = DnfDbusSignals()
-    # Start the event loop.
     loop = EventLoop()
+    listener = DnfDbusSignals(loop)
+    # Start the event loop.
     loop.run()
