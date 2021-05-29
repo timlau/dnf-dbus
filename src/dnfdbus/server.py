@@ -130,8 +130,8 @@ class DnfDbus(Publishable):
         return self._signal_progress
 
     @property
-    def signal_quiting(self):
-        return self._signal_quiting
+    def signal_quitting(self):
+        return self._signal_quitting
 
 # ========================= Interface Implementation ===================================
     def version(self) -> Str:
@@ -143,7 +143,7 @@ class DnfDbus(Publishable):
         ''' Quit the DBUS Daemon'''
         self.working_start(write=False)
         log.info("Quiting dk.rasmil.DnfDbus")
-        self.signal_quiting.emit()
+        self.signal_quitting.emit()
         self.loop.quit()
         self.working_ended()
 
