@@ -64,9 +64,11 @@ test-cleanup:
 	@git checkout -f
 	@git checkout ${GIT_MASTER}
 	@git branch -D release-test
+	@git stash apply
 
 test-release:
 	$(MAKE) build-setup
+	@git stash push
 	@git checkout -b release-test
 	# +1 Minor version and add 0.1-gitYYYYMMDD release
 	@cat ${APPNAME}.spec | sed  -e 's/${VER_REGEX}/\1${BUMPED_MINOR}/' -e 's/\(^Release:\s*\)\([0-9]*\)\(.*\)./\10.1.${GITDATE}%{?dist}/' > ${APPNAME}-test.spec ; mv ${APPNAME}-test.spec ${APPNAME}.spec
@@ -92,7 +94,16 @@ start-service:
 run-devtest:
 	sudo PYTHONPATH=$(TESTLIBS) python3 examples/backend/devtest.py
 
+dbus-introspect:
+	gdbus introspect --system --dest dk.rasmil.DnfDbus --object-path /dk/rasmil/DnfDbus
+
+dbus-quit:
+	gdbus call --system --dest dk.rasmil.DnfDbus --object-path /dk/rasmil/DnfDbus --method dk.rasmil.DnfDbus.Quit
+
+dbus-test:
+	gdbus call --system --dest dk.rasmil.DnfDbus --object-path /dk/rasmil/DnfDbus --method dk.rasmil.DnfDbus.TestSignals
+
 PNONY: run-tests selinux install build-setup test-release test-cleanup show-vars test-reinst test-upd
-PNONY: clean run-devtest
+PNONY: clean run-devtest dbus-introspect dbus-quit dbus-quit
 
 
