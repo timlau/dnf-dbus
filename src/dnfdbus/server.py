@@ -22,7 +22,6 @@ import json
 from dasbus.connection import SystemMessageBus
 from dasbus.error import DBusError, ErrorMapper, get_error_decorator
 from dasbus.identifier import DBusServiceIdentifier
-from dasbus.loop import EventLoop
 from dasbus.server.interface import dbus_interface, dbus_signal
 from dasbus.server.publishable import Publishable
 from dasbus.server.template import InterfaceTemplate
@@ -61,6 +60,7 @@ class AccessDeniedError(DBusError):
 # Only contains the CamelCase method there is published to DBus
 
 
+# noinspection PyPep8Naming
 @dbus_interface(DNFDBUS.interface_name)
 class DnfDbusInterface(InterfaceTemplate):
 
@@ -72,19 +72,19 @@ class DnfDbusInterface(InterfaceTemplate):
 
     @property
     def Version(self) -> Str:
-        ''' Get Version of DBUS Daemon'''
+        """ Get Version of DBUS Daemon"""
         return self.implementation.version()
 
     def Quit(self) -> None:
-        ''' Quit the DBUS Daemon'''
+        """ Quit the DBUS Daemon"""
         return self.implementation.quit()
 
     def GetRepositories(self) -> Str:
-        ''' Get Repositories'''
+        """ Get Repositories"""
         return self.implementation.get_repositories()
 
     def GetPackagesByKey(self, key: Str) -> Str:
-        ''' Get Backages by key '''
+        """ Get Backages by key """
         return self.implementation.get_packages_by_key(key)
 
     def TestSignals(self) -> None:
@@ -135,12 +135,12 @@ class DnfDbus(Publishable):
 
 # ========================= Interface Implementation ===================================
     def version(self) -> Str:
-        ''' Get Version of DBUS Daemon'''
+        """ Get Version of DBUS Daemon"""
         log.debug(f"Starting Version ")
         return f'Version : {VERSION}'
 
     def quit(self) -> None:
-        ''' Quit the DBUS Daemon'''
+        """ Quit the DBUS Daemon"""
         self.working_start(write=False)
         log.info("Quiting dk.rasmil.DnfDbus")
         self.signal_quitting.emit()
@@ -148,14 +148,14 @@ class DnfDbus(Publishable):
         self.working_ended()
 
     def get_repositories(self) -> Str:
-        ''' Get Repositories'''
+        """ Get Repositories"""
         self.working_start(write=False)
         log.debug("Starting GetRepository")
         repos = self.backend.get_repositories()
         return self.working_ended(json.dumps([repo.dump for repo in repos]))
 
     def get_packages_by_key(self, key: Str) -> Str:
-        ''' Get Backages by key '''
+        """ Get Packages by key """
         self.working_start(write=False)
         log.debug("Starting GetPackagesByKey")
         pkgs = self.backend.packages.by_key(key)
@@ -166,12 +166,9 @@ class DnfDbus(Publishable):
         self.signal_progress.emit("progress", .5)
         self.signal_message.emit("some message")
 
-
 # ======================= Helpers ====================================
-
-
     def working_start(self,  write=True):
-        ''' Check permission and set work is being done flag '''
+        """ Check permission and set work is being done flag """
         if write:
             self.check_permission_write()
         else:
@@ -179,7 +176,7 @@ class DnfDbus(Publishable):
         self._is_working = True
 
     def working_ended(self, value=None):
-        ''' Release work is being done flag and return the passed value '''
+        """ Release work is being done flag and return the passed value """
         self._is_working = False
         return value
 

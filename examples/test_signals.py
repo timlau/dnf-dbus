@@ -1,4 +1,4 @@
-from dnfdbus.client import DnfDbusClient, DnfDbusSignals
+from dnfdbus.client import DnfDbusSignals
 from dasbus.loop import EventLoop
 
 if __name__ == "__main__":

@@ -47,5 +47,5 @@ def check_permission(action):
 
 if __name__ == "__main__":
     print(f'Sender : {DBUS_SENDER}')
-    granted = check_permission('dk.rasmil.DnfDbus.read')
-    print(granted)
+    is_granted = check_permission('dk.rasmil.DnfDbus.read')
+    print(is_granted)

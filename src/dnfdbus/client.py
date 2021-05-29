@@ -21,11 +21,8 @@
 import json
 from dataclasses import dataclass
 
-from dasbus.connection import SystemMessageBus
-from dasbus.identifier import DBusServiceIdentifier
-
 from dnfdbus.misc import to_nevra
-from dnfdbus.server import DNFDBUS, SYSTEM_BUS
+from dnfdbus.server import DNFDBUS
 from dasbus.loop import EventLoop
 
 

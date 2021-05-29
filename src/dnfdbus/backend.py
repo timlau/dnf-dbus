@@ -18,9 +18,6 @@
 """
 dnfdbus.dnf module
 """
-import json
-import sys
-
 import dnf
 
 
@@ -59,7 +56,7 @@ class DnfPkg:
         return str(self.pkg)
 
     def __repr__(self):
-        return(f'DnfPkg({str(self.pkg)})')
+        return f'DnfPkg({str(self.pkg)})'
 
     @property
     def name(self):
@@ -94,7 +91,7 @@ class DnfPackages:
 
     @property
     def installed(self):
-        ''' Get list of installed packages'''
+        """ Get list of installed packages"""
         self.backend.setup()
         q = self.base.sack.query()
         q = q.installed()
@@ -102,14 +99,14 @@ class DnfPackages:
 
     @property
     def available(self):
-        ''' Get list of lastest available packages'''
+        """ Get list of lastest available packages"""
         self.backend.setup()
         q = self.base.sack.query().available().latest()
         return [DnfPkg(pkg) for pkg in q]
 
     @property
     def available_all(self):
-        ''' Get list of all available packages'''
+        """ Get list of all available packages"""
         self.backend.setup()
         q = self.base.sack.query()
         q = q.available()
@@ -132,20 +129,19 @@ class DnfBackend:
 
     @property
     def packages(self):
-        ''' Get tha package object'''
+        """ Get tha package object"""
         if not self._packages:
             self._packages = DnfPackages(self)
         return self._packages
 
     def setup(self):
-        ''' Setup Dnf load repository info & fill the sack '''
+        """ Setup Dnf load repository info & fill the sack """
         if not self.is_setup:
             _ = self.base.read_all_repos()
-            #_ = self.base.fill_sack()
             _ = self.base.fill_sack_from_repos_in_cache()
             self.is_setup = True
 
     def get_repositories(self) -> list:
-        ''' Get list of repositories'''
+        """ Get list of repositories"""
         self.setup()
         return [DnfRepository(self.base.repos[repo]) for repo in self.base.repos]
