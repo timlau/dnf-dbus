@@ -82,6 +82,7 @@ class DnfDbusSignals:
         print(f'Progress: {msg=} {fraction=}')
 
     def quitting(self):
+        print('Daemon is quitting')
         self.loop.quit()
 
 
