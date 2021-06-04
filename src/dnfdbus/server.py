@@ -29,7 +29,7 @@ from dasbus.signal import Signal
 from dasbus.typing import Str, Double
 
 from dnfdbus.backend import DnfBackend
-from dnfdbus.misc import log
+from dnfdbus.misc import log, logger
 from dnfdbus.polkit import DBUS_SENDER, check_permission
 
 # Constants
@@ -134,11 +134,12 @@ class DnfDbus(Publishable):
         return self._signal_quitting
 
 # ========================= Interface Implementation ===================================
+    @logger
     def version(self) -> Str:
         """ Get Version of DBUS Daemon"""
-        log.debug(f"Starting Version ")
         return f'Version : {VERSION}'
 
+    @logger
     def quit(self) -> None:
         """ Quit the DBUS Daemon"""
         self.working_start(write=False)
@@ -147,20 +148,21 @@ class DnfDbus(Publishable):
         self.loop.quit()
         self.working_ended()
 
+    @logger
     def get_repositories(self) -> Str:
         """ Get Repositories"""
         self.working_start(write=False)
-        log.debug("Starting GetRepository")
         repos = self.backend.get_repositories()
         return self.working_ended(json.dumps([repo.dump for repo in repos]))
 
+    @logger
     def get_packages_by_key(self, key: Str) -> Str:
         """ Get Packages by key """
         self.working_start(write=False)
-        log.debug("Starting GetPackagesByKey")
         pkgs = self.backend.packages.by_key(key)
         return self.working_ended(json.dumps([pkg.dump for pkg in pkgs]))
 
+    @logger
     def test_signals(self):
         log.debug(f"Starting TestSignals")
         self.signal_progress.emit("progress", .5)

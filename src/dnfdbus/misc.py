@@ -47,9 +47,9 @@ def logger(func):
     This decorator that logs start of end of a called method or function
     """
     def newFunc(*args, **kwargs):
-        log.debug("%s started args: %s " % (func.__name__, repr(args[1:])))
+        log.debug("=> %s started args: %s " % (func.__name__, repr(args[1:])))
         rc = func(*args, **kwargs)
-        log.debug("%s ended" % func.__name__)
+        log.debug("=> %s ended" % func.__name__)
         return rc
 
     newFunc.__name__ = func.__name__

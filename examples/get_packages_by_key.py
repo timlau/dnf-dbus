@@ -18,10 +18,13 @@
 """
 Example for using the GetPackagesByKey
 """
+import logging
 from dnfdbus.client import DnfDbusClient
+from dnfdbus.misc import do_log_setup
 
 if __name__ == "__main__":
     # Setup client to talk to the DnfDbus Backend
+    do_log_setup(loglvl=logging.DEBUG)
     client = DnfDbusClient()
     print(client.version)
 
