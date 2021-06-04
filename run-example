@@ -1,0 +1,2 @@
+#/usr/bin/bash
+PYTHONPATH=src/ python $1
