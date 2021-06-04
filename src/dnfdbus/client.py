@@ -83,11 +83,28 @@ class DnfDbusSignals:
         self.loop.quit()
 
 
+class AsyncDbusCaller:
+    def __init__(self):
+        self.res = None
+        self.loop = None
+
+    def callback(self, call):
+        self.res = call()
+        self.loop.quit()
+
+    def call(self, mth, *args, **kwargs):
+        self.loop = EventLoop()
+        mth(*args, **kwargs, callback=self.callback)
+        self.loop.run()
+        return self.res
+
+
 class DnfDbusClient:
     """Wrapper class for the dk.rasmil.DnfDbus Dbus object"""
 
     def __init__(self):
         self.proxy = DNFDBUS.get_proxy()
+        self.async_dbus = AsyncDbusCaller()
 
     @property
     def version(self) -> str:
@@ -105,5 +122,5 @@ class DnfDbusClient:
 
     def get_packages_by_key(self, key: str) -> list:
         """ Get packages that matches a key """
-        pkgs = json.loads(self.proxy.GetPackagesByKey(key))
+        pkgs = json.loads(self.async_dbus.call(self.proxy.GetPackagesByKey, key))
         return [DnfPkg(pkg) for pkg in pkgs]
