@@ -87,6 +87,10 @@ class DnfDbusInterface(InterfaceTemplate):
         """ Get Backages by key """
         return self.implementation.get_packages_by_key(key)
 
+    def GetPackagesByFilter(self, flt: Str) -> Str:
+        """ Get Backages by key """
+        return self.implementation.get_packages_by_filter(flt)
+
     def TestSignals(self) -> None:
         return self.implementation.test_signals()
 
@@ -160,6 +164,13 @@ class DnfDbus(Publishable):
         """ Get Packages by key """
         self.working_start(write=False)
         pkgs = self.backend.packages.by_key(key)
+        return self.working_ended(json.dumps([pkg.dump for pkg in pkgs]))
+
+    @logger
+    def get_packages_by_filter(self, flt: Str) -> Str:
+        """ Get Packages by key """
+        self.working_start(write=False)
+        pkgs = self.backend.packages.by_filter(flt)
         return self.working_ended(json.dumps([pkg.dump for pkg in pkgs]))
 
     @logger

@@ -112,12 +112,32 @@ class DnfPackages:
         q = q.available()
         return [DnfPkg(pkg) for pkg in q]
 
+    @property
+    def updates(self):
+        """ Get list of all available packages"""
+        self.backend.setup()
+        q = self.base.sack.query()
+        q = q.upgrades().latest()
+        return [DnfPkg(pkg) for pkg in q]
+
     def by_key(self, key):
         """ find packages the match a key (Ex. '*qt6*') """
         self.backend.setup()
         subject = dnf.subject.Subject(key)  # type: ignore
         q = subject.get_best_query(self.base.sack)
         return [DnfPkg(pkg) for pkg in q]
+
+    def by_filter(self, flt):
+        """ find packages the match a key (Ex. '*qt6*') """
+        self.backend.setup()
+        if flt == 'installed':
+            return self.installed
+        if flt == 'available':
+            return self.available
+        if flt == 'updates':
+            return self.updates
+        else:
+            return []
 
 
 class DnfBackend:

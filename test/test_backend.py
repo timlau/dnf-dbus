@@ -1,6 +1,5 @@
 """ Unit Test for dnfdbus.backend """
 
-import re
 import unittest
 from unittest.mock import MagicMock, Mock, patch
 
@@ -63,10 +62,10 @@ class TestRepository(unittest.TestCase):
         pass
 
     def test_properties(self):
-        id = self.repo.id
+        repo_id = self.repo.id
         name = self.repo.name
         enabled = self.repo.enabled
-        self.assertEqual(id, 'id')
+        self.assertEqual(repo_id, 'id')
         self.assertEqual(name, 'name')
         self.assertEqual(enabled, True)
 
@@ -100,13 +99,20 @@ class TestDnfBackend(unittest.TestCase):
         self.assertEqual(res[2].name, 'id3')
         self.assertEqual(res[2].enabled, False)
 
-    def test_pkg_installed(self):
-        self.base.sack.query().installed.return_value = TEST_PKG_LIST
-        pkgs = self.backend.packages
-        inst = pkgs.installed
-        self.assertIsInstance(inst, list)
-        self.assertEqual(len(inst), 10)
-        pkg = inst[0]  # AtomicParsley-0.9.5-17.fc34.x86_64
+
+class TestDnfPackages(unittest.TestCase):
+
+    def setUp(self):
+        self.base = dnf_mock()
+        self.backend = DnfBackend(self.base)
+
+    def tearDown(self):
+        pass
+
+    def _assert_test_packages(self, pkgs: list):
+        self.assertIsInstance(pkgs, list)
+        self.assertEqual(len(pkgs), 10)
+        pkg = pkgs[0]  # AtomicParsley-0.9.5-17.fc34.x86_64
         self.assertIsInstance(pkg, DnfPkg)
         self.assertEqual(pkg.name, 'AtomicParsley')
         self.assertEqual(pkg.version, '0.9.5')
@@ -114,20 +120,17 @@ class TestDnfBackend(unittest.TestCase):
         self.assertEqual(pkg.arch, 'x86_64')
         self.assertEqual(pkg.epoch, '0')
 
+    def test_pkg_installed(self):
+        self.base.sack.query().installed.return_value = TEST_PKG_LIST
+        pkgs = self.backend.packages
+        res = pkgs.installed
+        self._assert_test_packages(res)
+
     def test_pkg_available(self):
         self.base.sack.query().available().latest.return_value = TEST_PKG_LIST
         pkgs = self.backend.packages
-        inst = pkgs.available
-        # print(f'{inst=}')
-        self.assertIsInstance(inst, list)
-        self.assertEqual(len(inst), 10)
-        pkg = inst[0]  # AtomicParsley-0.9.5-17.fc34.x86_64
-        self.assertIsInstance(pkg, DnfPkg)
-        self.assertEqual(pkg.name, 'AtomicParsley')
-        self.assertEqual(pkg.version, '0.9.5')
-        self.assertEqual(pkg.release, '17.fc34')
-        self.assertEqual(pkg.arch, 'x86_64')
-        self.assertEqual(pkg.epoch, '0')
+        res = pkgs.available
+        self._assert_test_packages(res)
 
     @patch('dnf.subject.Subject')
     def test_pkg_by_key(self, mock_sbj):
@@ -138,5 +141,28 @@ class TestDnfBackend(unittest.TestCase):
         mock_sbj.assert_called_with('*qt6*')
         mock_sbj().get_best_query.assert_called()
         # returns list of DnfPkg
-        self.assertIsInstance(res, list)
-        self.assertIsInstance(res[0], DnfPkg)
+        self._assert_test_packages(res)
+
+    def test_pkg_by_filter_installed(self):
+        self.base.sack.query().installed.return_value = TEST_PKG_LIST
+        pkgs = self.backend.packages
+        res = pkgs.by_filter('installed')
+        self._assert_test_packages(res)
+
+    def test_pkg_by_filter_availabe(self):
+        self.base.sack.query().available().latest.return_value = TEST_PKG_LIST
+        pkgs = self.backend.packages
+        res = pkgs.by_filter('available')
+        self._assert_test_packages(res)
+
+    def test_pkg_by_filter_updates(self):
+        self.base.sack.query().upgrades().latest.return_value = TEST_PKG_LIST
+        pkgs = self.backend.packages
+        res = pkgs.by_filter('updates')
+        self._assert_test_packages(res)
+
+    def test_pkg_by_filter_notfound(self):
+        pkgs = self.backend.packages
+        inst = pkgs.by_filter('NOTFOUND')
+        self.assertIsInstance(inst, list)
+        self.assertEqual(len(inst), 0)
