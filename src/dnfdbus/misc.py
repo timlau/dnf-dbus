@@ -18,27 +18,24 @@
 """ Module with Misc. helper funtions and other stuff"""
 
 import logging
-import re
 import sys
 
 log = logging.getLogger('dnfdbus.common')
 
-NEVRA_RE = re.compile(
-    r'([a-z0-9_\-]*)(-([0-9]*):|-)([0-9\.]*)-([0-9a-z\.]*)\.([a-z0-9_]*)$', re.IGNORECASE)
-
-
 def to_nevra(pkg):
-    ''' convert pkg string to NEVRA (Name, Epoch, Version, Release, Arch) '''
-    match = NEVRA_RE.search(pkg)
-    n = match.group(1)
-    if match.group(3):
-        e = match.group(3)
-    else:
+    """ convert pkg string to NEVRA (Name, Epoch, Version, Release, Arch) """
+    archIndex = pkg.rfind('.')
+    a = pkg[archIndex + 1:]
+    relIndex = pkg[:archIndex].rfind('-')
+    r = pkg[relIndex + 1:archIndex]
+    verIndex = pkg[:relIndex].rfind('-')
+    v = pkg[verIndex + 1:relIndex]
+    eIndex = v.find(':')
+    if eIndex == -1:
         e = '0'
-    v = match.group(4)
-    r = match.group(5)
-    a = match.group(6)
-    #print(f'{n=} {e=} {v=} {r=} {a=}')
+    else:
+        e, v = v.split(':')
+    n = pkg[:verIndex]
     return n, e, v, r, a
 
 
