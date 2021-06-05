@@ -124,3 +124,8 @@ class DnfDbusClient:
         """ Get packages that matches a key """
         pkgs = json.loads(self.async_dbus.call(self.proxy.GetPackagesByKey, key))
         return [DnfPkg(pkg) for pkg in pkgs]
+
+    def get_packages_by_filter(self, flt: str) -> list:
+        """ Get packages that matches a key """
+        pkgs = json.loads(self.async_dbus.call(self.proxy.GetPackagesByFilter, flt))
+        return [DnfPkg(pkg) for pkg in pkgs]

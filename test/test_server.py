@@ -1,13 +1,23 @@
 import unittest
 from unittest.mock import MagicMock, patch
-from dnfdbus.server import DnfDbus
+from dnfdbus.server import DnfDbus, AccessDeniedError
+from dnfdbus.backend import DnfPkg, DnfRepository
+from dnfdbus.client import DnfPkg as FakePkg
+FAKE_PKG = FakePkg('foo-too-loo-3:2.3.0-1.fc34.noarch')
+
+
+class FakeRepo:
+    def __init__(self, repo_id, name, enabled):
+        self.id = repo_id
+        self.name = name
+        self.enabled = enabled
 
 
 class TestDnfDbus (unittest.TestCase):
 
     def setUp(self):
-        loop = MagicMock()
-        self.dbus = DnfDbus(loop)
+        self.mock_loop = MagicMock()
+        self.dbus = DnfDbus(self.mock_loop)
         self.dbus.backend = MagicMock()
         self.perm_mock = MagicMock(return_value=True)
 
@@ -32,6 +42,15 @@ class TestDnfDbus (unittest.TestCase):
         self.assertIn(mock_sender, self.dbus.authorized_sender_read)
         self.assertEqual(self.dbus._is_working, True)
 
+    @patch('dnfdbus.server.check_permission')
+    @patch('dnfdbus.server.DBUS_SENDER')
+    def test_permission_fail(self, mock_sender, mock_cp):
+        """ test AccessDeniedError exception if permission is not granted """
+        mock_cp.return_value = False
+        with self.assertRaises(AccessDeniedError):
+            self.dbus.working_start()
+        mock_cp.assert_called_with('dk.rasmil.DnfDbus.write')
+
     def test_working_start(self):
         self._overload_permission()
         self.dbus.working_start()
@@ -43,3 +62,39 @@ class TestDnfDbus (unittest.TestCase):
         res = self.dbus.working_ended('foobar')
         self.assertEqual(self.dbus._is_working, False)
         self.assertEqual(res, 'foobar')
+
+    def test_version(self):
+        res = self.dbus.version()
+        self.assertEqual(res, 'Version : 1.0')
+
+    def test_quit(self):
+        self._overload_permission()
+        self.dbus._signal_quitting = MagicMock()
+        self.dbus.quit()
+        self.dbus._signal_quitting.emit.assert_called()
+        self.mock_loop.quit.assert_called()
+
+    def test_get_repositories(self):
+        self._overload_permission()
+        self.dbus.backend.get_repositories.return_value = [DnfRepository(FakeRepo('repoid', 'reponame', True))]
+        res = self.dbus.get_repositories()
+        self.assertIsInstance(res, str)
+        self.assertEqual(res, '[{"id": "repoid", "name": "reponame", "enabled": true}]')
+
+    def test_get_packages_by_key(self):
+        self._overload_permission()
+        pkgs_mock = MagicMock()
+        self.dbus.backend.packages = pkgs_mock
+        pkgs_mock.by_key.return_value = [DnfPkg(FAKE_PKG)]
+        res = self.dbus.get_packages_by_key("foobar")
+        self.assertIsInstance(res, str)
+        self.assertEqual(res, '["foo-too-loo-3:2.3.0-1.fc34.noarch"]')
+
+    def test_get_packages_by_filter(self):
+        self._overload_permission()
+        pkgs_mock = MagicMock()
+        self.dbus.backend.packages = pkgs_mock
+        pkgs_mock.by_filter.return_value = [DnfPkg(FAKE_PKG)]
+        res = self.dbus.get_packages_by_filter("installed")
+        self.assertIsInstance(res, str)
+        self.assertEqual(res, '["foo-too-loo-3:2.3.0-1.fc34.noarch"]')
