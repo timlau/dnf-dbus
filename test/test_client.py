@@ -8,12 +8,14 @@ from dnfdbus.client import DnfDbusClient, DnfPkg, DnfRepo
 class TestDnfPkg(unittest.TestCase):
 
     def testDnfPkg(self):
-        pkg = DnfPkg('foo-too-loo-3:2.3.0-1.fc34.noarch')
+        pkg = DnfPkg('foo-too-loo-3:2.3.0-1.fc34.noarch;myrepo')
         self.assertEqual(pkg.name, 'foo-too-loo')
         self.assertEqual(pkg.epoch, '3')
         self.assertEqual(pkg.version, '2.3.0')
         self.assertEqual(pkg.release, '1.fc34')
         self.assertEqual(pkg.arch, 'noarch')
+        self.assertEqual(pkg.reponame, 'myrepo')
+
 
 
 class TestDnfRepo(unittest.TestCase):
@@ -68,7 +70,7 @@ class TestClient(unittest.TestCase):
         """ Test get_packages_by_key() method"""
         self.client.async_dbus = MagicMock()
         self.client.async_dbus.call.return_value = json.dumps(
-            ['foo-too-loo-3:2.3.0-1.fc34.noarch'])
+            ['foo-too-loo-3:2.3.0-1.fc34.noarch;myrepo'])
         pkgs = self.client.get_packages_by_key("*too-loo*")
         self.check_async_called('GetPackagesByKey', "*too-loo*")
         self.assertIsInstance(pkgs, list)
@@ -79,3 +81,4 @@ class TestClient(unittest.TestCase):
         self.assertEqual(pkg.version, '2.3.0')
         self.assertEqual(pkg.release, '1.fc34')
         self.assertEqual(pkg.arch, 'noarch')
+        self.assertEqual(pkg.reponame, 'myrepo')

@@ -45,16 +45,18 @@ class DnfPkg:
     version: str
     release: str
     arch: str
+    reponame: str
 
-    def __init__(self, pkg: str) -> None:
+    def __init__(self, po: str) -> None:
+        pkg, self.reponame = po.split(';')
         self.name, self.epoch, self.version, self.release, self.arch = to_nevra(
             pkg)
 
     def __repr__(self) -> str:
         if self.epoch == '0':
-            return f'{self.name}-{self.version}-{self.release}.{self.arch}'
+            return f'{self.name}-{self.version}-{self.release}.{self.arch};{self.reponame}'
         else:
-            return f'{self.name}-{self.epoch}:{self.version}-{self.release}.{self.arch}'
+            return f'{self.name}-{self.epoch}:{self.version}-{self.release}.{self.arch};{self.reponame}'
 
     def __str__(self) -> str:
         return self.__repr__()

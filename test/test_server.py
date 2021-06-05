@@ -1,9 +1,25 @@
 import unittest
+from dataclasses import dataclass
 from unittest.mock import MagicMock, patch
 from dnfdbus.server import DnfDbus, AccessDeniedError
 from dnfdbus.backend import DnfPkg, DnfRepository
-from dnfdbus.client import DnfPkg as FakePkg
-FAKE_PKG = FakePkg('foo-too-loo-3:2.3.0-1.fc34.noarch')
+
+
+@dataclass
+class FakePkg:
+    """ Fake dnf package"""
+    name: str = 'foo-too-loo'
+    epoch: str = '3'
+    version: str = '2.3.0'
+    release: str = '1.fc34'
+    arch: str = 'noarch'
+    reponame: str = 'myrepo'
+
+    def __str__(self):
+        if self.epoch == '0':
+            return f'{self.name}-{self.version}-{self.release}.{self.arch}'
+        else:
+            return f'{self.name}-{self.epoch}:{self.version}-{self.release}.{self.arch}'
 
 
 class FakeRepo:
@@ -85,16 +101,16 @@ class TestDnfDbus (unittest.TestCase):
         self._overload_permission()
         pkgs_mock = MagicMock()
         self.dbus.backend.packages = pkgs_mock
-        pkgs_mock.by_key.return_value = [DnfPkg(FAKE_PKG)]
+        pkgs_mock.by_key.return_value = [DnfPkg(FakePkg())]
         res = self.dbus.get_packages_by_key("foobar")
         self.assertIsInstance(res, str)
-        self.assertEqual(res, '["foo-too-loo-3:2.3.0-1.fc34.noarch"]')
+        self.assertEqual(res, '["foo-too-loo-3:2.3.0-1.fc34.noarch;myrepo"]')
 
     def test_get_packages_by_filter(self):
         self._overload_permission()
         pkgs_mock = MagicMock()
         self.dbus.backend.packages = pkgs_mock
-        pkgs_mock.by_filter.return_value = [DnfPkg(FAKE_PKG)]
+        pkgs_mock.by_filter.return_value = [DnfPkg(FakePkg())]
         res = self.dbus.get_packages_by_filter("installed")
         self.assertIsInstance(res, str)
-        self.assertEqual(res, '["foo-too-loo-3:2.3.0-1.fc34.noarch"]')
+        self.assertEqual(res, '["foo-too-loo-3:2.3.0-1.fc34.noarch;myrepo"]')

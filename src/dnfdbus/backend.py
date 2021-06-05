@@ -79,8 +79,12 @@ class DnfPkg:
         return self.pkg.epoch
 
     @property
+    def reponame(self):
+        return self.pkg.reponame
+
+    @property
     def dump(self) -> str:
-        return str(self.pkg)
+        return f'{str(self.pkg)};{self.reponame}'
 
 
 class DnfPackages:
