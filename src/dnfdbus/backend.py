@@ -83,6 +83,22 @@ class DnfPkg:
         return self.pkg.reponame
 
     @property
+    def summary(self):
+        return self.pkg.summary
+
+    @property
+    def description(self):
+        return self.pkg.description
+
+    @property
+    def size(self):
+        return self.pkg.downloadsize or self.pkg.installsize
+
+    @property
+    def dump_list(self):
+        return [f'{str(self.pkg)};{self.reponame}', self.summary, self.size]
+
+    @property
     def dump(self) -> str:
         return f'{str(self.pkg)};{self.reponame}'
 

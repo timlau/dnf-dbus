@@ -46,6 +46,8 @@ class DnfPkg:
     release: str
     arch: str
     reponame: str
+    summary: str = ""
+    size: int = 0
 
     def __init__(self, po: str) -> None:
         pkg, self.reponame = po.split(';')
@@ -127,7 +129,17 @@ class DnfDbusClient:
         pkgs = json.loads(self.async_dbus.call(self.proxy.GetPackagesByKey, key))
         return [DnfPkg(pkg) for pkg in pkgs]
 
-    def get_packages_by_filter(self, flt: str) -> list:
+    def get_packages_by_filter(self, flt: str, extra: bool = False) -> list:
         """ Get packages that matches a key """
-        pkgs = json.loads(self.async_dbus.call(self.proxy.GetPackagesByFilter, flt))
-        return [DnfPkg(pkg) for pkg in pkgs]
+        pkgs = json.loads(self.async_dbus.call(self.proxy.GetPackagesByFilter, flt, extra))
+        if extra:
+            res = []
+            for elem in pkgs:
+                pkg, summary, size = elem
+                po = DnfPkg(pkg)
+                po.summary = summary
+                po.size = size
+                res.append(po)
+            return res
+        else:
+            return [DnfPkg(pkg) for pkg in pkgs]

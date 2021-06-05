@@ -1,4 +1,5 @@
 import unittest
+import json
 from dataclasses import dataclass
 from unittest.mock import MagicMock, patch
 from dnfdbus.server import DnfDbus, AccessDeniedError
@@ -14,12 +15,16 @@ class FakePkg:
     release: str = '1.fc34'
     arch: str = 'noarch'
     reponame: str = 'myrepo'
+    summary: str = "This is a Fake Package"
+    downloadsize: int = 100000
 
     def __str__(self):
         if self.epoch == '0':
             return f'{self.name}-{self.version}-{self.release}.{self.arch}'
         else:
             return f'{self.name}-{self.epoch}:{self.version}-{self.release}.{self.arch}'
+
+
 
 
 class FakeRepo:
@@ -110,7 +115,12 @@ class TestDnfDbus (unittest.TestCase):
         self._overload_permission()
         pkgs_mock = MagicMock()
         self.dbus.backend.packages = pkgs_mock
-        pkgs_mock.by_filter.return_value = [DnfPkg(FakePkg())]
-        res = self.dbus.get_packages_by_filter("installed")
+        fake_po = DnfPkg(FakePkg())
+        pkgs_mock.by_filter.return_value = [fake_po]
+        res = self.dbus.get_packages_by_filter("installed", False)
         self.assertIsInstance(res, str)
         self.assertEqual(res, '["foo-too-loo-3:2.3.0-1.fc34.noarch;myrepo"]')
+        # Test with extra = True
+        res = json.loads(self.dbus.get_packages_by_filter("installed", True))
+        self.assertIsInstance(res, list)
+        self.assertEqual(res[0], fake_po.dump_list)

@@ -29,18 +29,15 @@ if __name__ == "__main__":
     print(client.version)
 
     # Get packages matching at filter with wildcards
-    pkgs = client.get_packages_by_filter("installed")
+    pkgs = client.get_packages_by_filter("installed", True)
     print(f"================ Installed ({len(pkgs)}) ===================")
-    # for pkg in pkgs:
-    #     print(pkg)
-    pkgs = client.get_packages_by_filter("available")
+    for pkg in pkgs:
+        print(f'{pkg}  : {pkg.summary} : {pkg.size}')
+    pkgs = client.get_packages_by_filter("available", True)
     print(f"================ Available ({len(pkgs)}) ===================")
-    # for pkg in pkgs:
-    #     print(pkg)
+    for pkg in pkgs:
+        print(f'{pkg}  : {pkg.summary} : {pkg.size}')
     pkgs = client.get_packages_by_filter("updates")
     print(f"================ Updates ({len(pkgs)}) ===================")
-    # for pkg in pkgs:
-    #     print(pkg)
-
     # Quit the running DnfDbus Backend
     client.quit()

@@ -82,3 +82,39 @@ class TestClient(unittest.TestCase):
         self.assertEqual(pkg.release, '1.fc34')
         self.assertEqual(pkg.arch, 'noarch')
         self.assertEqual(pkg.reponame, 'myrepo')
+
+    def testGetPackagesByFilter(self):
+        """ Test get_packages_by_key() method"""
+        self.client.async_dbus = MagicMock()
+        self.client.async_dbus.call.return_value = json.dumps(
+            ['foo-too-loo-3:2.3.0-1.fc34.noarch;myrepo'])
+        pkgs = self.client.get_packages_by_filter("installed", False)
+        self.check_async_called('GetPackagesByFilter', "installed", False)
+        self.assertIsInstance(pkgs, list)
+        pkg = pkgs[0]
+        self.assertIsInstance(pkg, DnfPkg)
+        self.assertEqual(pkg.name, 'foo-too-loo')
+        self.assertEqual(pkg.epoch, '3')
+        self.assertEqual(pkg.version, '2.3.0')
+        self.assertEqual(pkg.release, '1.fc34')
+        self.assertEqual(pkg.arch, 'noarch')
+        self.assertEqual(pkg.reponame, 'myrepo')
+
+    def testGetPackagesByFilterExtra(self):
+        """ Test get_packages_by_key() method"""
+        self.client.async_dbus = MagicMock()
+        self.client.async_dbus.call.return_value = json.dumps(
+            [['foo-too-loo-3:2.3.0-1.fc34.noarch;myrepo', 'package summary', 100000]])
+        pkgs = self.client.get_packages_by_filter("installed", True)
+        self.check_async_called('GetPackagesByFilter', "installed", True)
+        self.assertIsInstance(pkgs, list)
+        pkg = pkgs[0]
+        self.assertIsInstance(pkg, DnfPkg)
+        self.assertEqual(pkg.name, 'foo-too-loo')
+        self.assertEqual(pkg.epoch, '3')
+        self.assertEqual(pkg.version, '2.3.0')
+        self.assertEqual(pkg.release, '1.fc34')
+        self.assertEqual(pkg.arch, 'noarch')
+        self.assertEqual(pkg.reponame, 'myrepo')
+        self.assertEqual(pkg.size, 100000)
+        self.assertEqual(pkg.summary, 'package summary')
