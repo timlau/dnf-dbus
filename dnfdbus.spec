@@ -44,7 +44,7 @@ SELinux enabled in enforcing mode.
 %package -n python3-%{name}
 Summary:        %{name} python3 modules
 
-BuildRequires:  python3-devel
+BuildRequires:  python3-devel >= 3.9
 Requires:       python3-dasbus
 
 %{?python_provide:%python_provide python3-%{name}}
