@@ -25,8 +25,6 @@ class FakePkg:
             return f'{self.name}-{self.epoch}:{self.version}-{self.release}.{self.arch}'
 
 
-
-
 class FakeRepo:
     def __init__(self, repo_id, name, enabled):
         self.id = repo_id
@@ -34,7 +32,7 @@ class FakeRepo:
         self.enabled = enabled
 
 
-class TestDnfDbus (unittest.TestCase):
+class TestDnfDbus(unittest.TestCase):
 
     def setUp(self):
         self.mock_loop = MagicMock()
@@ -124,3 +122,22 @@ class TestDnfDbus (unittest.TestCase):
         res = json.loads(self.dbus.get_packages_by_filter("installed", True))
         self.assertIsInstance(res, list)
         self.assertEqual(res[0], fake_po.dump_list)
+
+    def test_get_package_attribute(self):
+        self._overload_permission()
+        pkg = 'AtomicParsley-0.9.5-17.fc34.x86_64'
+        self.dbus.backend.get_attribute.return_value = None
+        self.dbus.backend.get_attribute.return_value = \
+            [('qt6-assistant-6.1.0-2.fc34.x86_64', '@System', 'Documentation browser for Qt6.'),
+             ('qt6-assistant-6.1.0-2.fc34.x86_64', 'updates', 'Documentation browser for Qt6.')]
+        res = json.loads(self.dbus.get_package_attribute(pkg, "description"))
+        self.assertIsInstance(res, list)
+        self.assertEqual(2, len(res))
+        elem = res[0]
+        # json will convert tuple to list
+        self.assertIsInstance(elem, list)
+        self.assertEqual(3, len(elem))
+        nevra, reponame, desc = elem
+        self.assertEqual(nevra, 'qt6-assistant-6.1.0-2.fc34.x86_64')
+        self.assertEqual(reponame, '@System')
+        self.assertEqual(desc, 'Documentation browser for Qt6.')

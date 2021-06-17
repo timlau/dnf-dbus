@@ -56,6 +56,7 @@ dbus_error = get_error_decorator(ERROR_MAPPER)
 class AccessDeniedError(DBusError):
     pass
 
+
 # DBus interface
 # Only contains the CamelCase method there is published to DBus
 
@@ -91,6 +92,10 @@ class DnfDbusInterface(InterfaceTemplate):
         """ Get Backages by key """
         return self.implementation.get_packages_by_filter(flt, extra)
 
+    def GetPackageAttribute(self, pkg: str, attribute: str)-> Str:
+        """ Get attribute for a given package """
+        return self.implementation.get_package_attribute(pkg, attribute)
+
     def TestSignals(self) -> None:
         return self.implementation.test_signals()
 
@@ -105,6 +110,7 @@ class DnfDbusInterface(InterfaceTemplate):
     @dbus_signal
     def Quitting(self):  # type: ignore
         pass
+
 
 # Implementation of the DnfDbusInterface
 
@@ -137,7 +143,7 @@ class DnfDbus(Publishable):
     def signal_quitting(self):
         return self._signal_quitting
 
-# ========================= Interface Implementation ===================================
+    # ========================= Interface Implementation ===================================
     @logger
     def version(self) -> Str:
         """ Get Version of DBUS Daemon"""
@@ -177,13 +183,19 @@ class DnfDbus(Publishable):
             return self.working_ended(json.dumps([pkg.dump for pkg in pkgs]))
 
     @logger
+    def get_package_attribute(self, pkg: str, attribute: str) -> str:
+        self.working_start(write=False)
+        value = self.backend.get_attribute(pkg, attribute)
+        return self.working_ended(json.dumps(value))
+
+    @logger
     def test_signals(self):
         log.debug(f"Starting TestSignals")
         self.signal_progress.emit("progress", .5)
         self.signal_message.emit("some message")
 
-# ======================= Helpers ====================================
-    def working_start(self,  write=True):
+    # ======================= Helpers ====================================
+    def working_start(self, write=True):
         """ Check permission and set work is being done flag """
         if write:
             self.check_permission_write()

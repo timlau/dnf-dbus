@@ -17,7 +17,6 @@
 
 """ Module for client code to talk with the DBus Backend daemon"""
 
-
 import json
 from dataclasses import dataclass
 
@@ -143,3 +142,8 @@ class DnfDbusClient:
             return res
         else:
             return [DnfPkg(pkg) for pkg in pkgs]
+
+    def get_package_attribute(self, pkg: str, attribute: str):
+        res = self.async_dbus.call(self.proxy.GetPackageAttribute, pkg, attribute)
+        res = json.loads(res)
+        return res

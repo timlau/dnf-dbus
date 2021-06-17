@@ -1,10 +1,17 @@
 """ Unit Test for dnfdbus.backend """
 
 import unittest
+from collections import namedtuple
 from unittest.mock import MagicMock, Mock, patch
 
 import dnfdbus.client as client
 from dnfdbus.backend import DnfBackend, DnfPkg, DnfRepository
+
+
+FakeDnfPkg = namedtuple('DnfPkg', "name epoch version release arch reponame summary description")
+
+FAKE_PKG_1 = FakeDnfPkg("AtomicParsley", "0", "0.9.5", "17.fc34", "x86_64", "myrepo", "summary", "description")
+FAKE_PKG_2 = FakeDnfPkg("AtomicParsley", "0", "0.9.5", "17.fc34", "x86_64", "@System", "summary", "description")
 
 TEST_PKGS = [
     "AtomicParsley-0.9.5-17.fc34.x86_64;myrepo",
@@ -99,6 +106,19 @@ class TestDnfBackend(unittest.TestCase):
         self.assertEqual(res[2].name, 'id3')
         self.assertEqual(res[2].enabled, False)
 
+    @patch('dnf.subject.Subject')
+    def test_get_attribute(self, mock_sbj):
+        mock_sbj().get_best_selector().matches.return_value = [FAKE_PKG_1]
+        pkg = 'AtomicParsley-0.9.5-17.fc34.x86_64;myrepo'
+        res = self.backend.get_attribute(pkg, 'description')
+        self.assertIsInstance(res, list)
+        elem = res[0]
+        self.assertIsInstance(elem, tuple)
+        nevra, reponame, desc = elem
+        self.assertEqual(nevra, 'AtomicParsley-0.9.5-17.fc34.x86_64')
+        self.assertEqual(reponame, 'myrepo')
+        self.assertEqual(desc, "description")
+
 
 class TestDnfPackages(unittest.TestCase):
 
@@ -166,3 +186,14 @@ class TestDnfPackages(unittest.TestCase):
         inst = pkgs.by_filter('NOTFOUND')
         self.assertIsInstance(inst, list)
         self.assertEqual(len(inst), 0)
+
+    @patch('dnf.subject.Subject')
+    def test_find_pkg(self, mock_sbj):
+        mock_sbj().get_best_selector().matches.return_value = [FAKE_PKG_1, FAKE_PKG_2]
+        pkg = 'AtomicParsley-0.9.5-17.fc34.x86_64'
+        res = self.backend.packages.find_pkg(pkg, None)
+        self.assertIsInstance(res, list)
+        self.assertEqual(len(res), 2)
+        po = res[0]
+        self.assertIsInstance(po, DnfPkg)
+        self.assertEqual(str(po), 'AtomicParsley-0.9.5-17.fc34.x86_64')

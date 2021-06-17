@@ -53,7 +53,10 @@ class DnfPkg:
         self.pkg = pkg
 
     def __str__(self):
-        return str(self.pkg)
+        if self.epoch == '0':
+            return f'{self.name}-{self.version}-{self.release}.{self.arch}'
+        else:
+            return f'{self.name}-{self.epoch}:{self.version}-{self.release}.{self.arch}'
 
     def __repr__(self):
         return f'DnfPkg({str(self.pkg)})'
@@ -93,6 +96,10 @@ class DnfPkg:
     @property
     def size(self):
         return self.pkg.downloadsize or self.pkg.installsize
+
+    @property
+    def changelog(self) -> dict:
+        return self.pkg.changelogs
 
     @property
     def dump_list(self):
@@ -140,11 +147,18 @@ class DnfPackages:
         q = q.upgrades().latest()
         return [DnfPkg(pkg) for pkg in q]
 
-    def by_key(self, key):
+    def find_pkg(self, key, reponame):
         """ find packages the match a key (Ex. '*qt6*') """
         self.backend.setup()
         subject = dnf.subject.Subject(key)  # type: ignore
-        q = subject.get_best_query(self.base.sack)
+        q = subject.get_best_selector(self.base.sack, reponame=reponame).matches()
+        return [DnfPkg(pkg) for pkg in q]
+
+    def by_key(self, key, reponame=None):
+        """ find packages the match a key (Ex. '*qt6*') """
+        self.backend.setup()
+        subject = dnf.subject.Subject(key)  # type: ignore
+        q = subject.get_best_query(self.base.sack, reponame=reponame)
         return [DnfPkg(pkg) for pkg in q]
 
     def by_filter(self, flt):
@@ -185,3 +199,21 @@ class DnfBackend:
         """ Get list of repositories"""
         self.setup()
         return [DnfRepository(self.base.repos[repo]) for repo in self.base.repos]
+
+    def get_attribute(self, pkg: str, attribute: str):
+        if ';' in pkg:
+            nevra, reponame = pkg.split(';')
+        else:
+            reponame = None
+            nevra = pkg
+        pkgs = self.packages.find_pkg(nevra, reponame)
+        value_list = []
+        for po in pkgs:
+            if hasattr(po, attribute):
+                value = getattr(po, attribute)
+            else:
+                value = None
+            elem = (str(po), po.reponame, value)
+            value_list.append(elem)
+
+        return value_list
