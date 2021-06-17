@@ -151,14 +151,15 @@ class DnfPackages:
         """ find packages the match a key (Ex. '*qt6*') """
         self.backend.setup()
         subject = dnf.subject.Subject(key)  # type: ignore
-        q = subject.get_best_selector(self.base.sack, reponame=reponame).matches()
+        q = subject.get_best_selector(
+            self.base.sack, reponame=reponame).matches()
         return [DnfPkg(pkg) for pkg in q]
 
-    def by_key(self, key, reponame=None):
+    def by_key(self, key):
         """ find packages the match a key (Ex. '*qt6*') """
         self.backend.setup()
         subject = dnf.subject.Subject(key)  # type: ignore
-        q = subject.get_best_query(self.base.sack, reponame=reponame)
+        q = subject.get_best_query(self.base.sack)
         return [DnfPkg(pkg) for pkg in q]
 
     def by_filter(self, flt):
