@@ -14262,8 +14262,7 @@ a.anchor-link {
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[1]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">dnfdbus.client</span> <span class="kn">import</span> <span class="n">DnfDbusClient</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">dnfdbus.client</span> <span class="kn">import</span> <span class="n">DnfDbusClient</span>
 <span class="kn">from</span> <span class="nn">dnfdbus.misc</span> <span class="kn">import</span> <span class="n">do_log_setup</span>
 
 <span class="c1"># Setup client to talk to the DnfDbus Backend</span>
@@ -14421,7 +14420,7 @@ RESULT:
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[3]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[1]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">dnfdbus.client</span> <span class="kn">import</span> <span class="n">DnfDbusClient</span>
@@ -14432,10 +14431,16 @@ RESULT:
 <span class="nb">print</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
 
 <span class="c1"># Get packages matching at filter with wildcards</span>
-<span class="n">pkgs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_packages_by_key</span><span class="p">(</span><span class="s2">&quot;*qt6-qtquick*&quot;</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">pkg</span> <span class="ow">in</span> <span class="n">pkgs</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">pkg</span><span class="p">)</span>
-
+<span class="n">pkgs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_packages_by_filter</span><span class="p">(</span><span class="s2">&quot;installed&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;================ Installed (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">pkgs</span><span class="p">)</span><span class="si">}</span><span class="s2">) ===================&quot;</span><span class="p">)</span>
+<span class="c1"># for pkg in pkgs:</span>
+    <span class="c1"># print(f&#39;{pkg}  : {pkg.summary} : {pkg.size}&#39;)</span>
+<span class="n">pkgs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_packages_by_filter</span><span class="p">(</span><span class="s2">&quot;available&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;================ Available (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">pkgs</span><span class="p">)</span><span class="si">}</span><span class="s2">) ===================&quot;</span><span class="p">)</span>
+<span class="c1"># for pkg in pkgs:</span>
+    <span class="c1"># print(f&#39;{pkg}  : {pkg.summary} : {pkg.size}&#39;)</span>
+<span class="n">pkgs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_packages_by_filter</span><span class="p">(</span><span class="s2">&quot;updates&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;================ Updates (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">pkgs</span><span class="p">)</span><span class="si">}</span><span class="s2">) ===================&quot;</span><span class="p">)</span>
 <span class="c1"># Quit the running DnfDbus Backend</span>
 <span class="n">client</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span>
 </pre></div>
@@ -14458,42 +14463,9 @@ RESULT:
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
 <pre>Version : 1.0
-qt6-qtquick3d-6.1.0-1.fc34.x86_64;@System
-qt6-qtquick3d-devel-6.1.0-1.fc34.x86_64;@System
-qt6-qtquick3d-examples-6.1.0-1.fc34.x86_64;@System
-qt6-qtquickcontrols2-6.1.0-1.fc34.x86_64;@System
-qt6-qtquickcontrols2-devel-6.1.0-1.fc34.x86_64;@System
-qt6-qtquickcontrols2-examples-6.1.0-1.fc34.x86_64;@System
-qt6-qtquicktimeline-6.1.0-1.fc34.x86_64;@System
-qt6-qtquicktimeline-devel-6.1.0-1.fc34.x86_64;@System
-qt6-qtquick3d-6.0.1-1.fc34.i686;fedora
-qt6-qtquick3d-6.0.1-1.fc34.x86_64;fedora
-qt6-qtquick3d-devel-6.0.1-1.fc34.i686;fedora
-qt6-qtquick3d-devel-6.0.1-1.fc34.x86_64;fedora
-qt6-qtquick3d-examples-6.0.1-1.fc34.x86_64;fedora
-qt6-qtquickcontrols2-6.0.1-1.fc34.i686;fedora
-qt6-qtquickcontrols2-6.0.1-1.fc34.x86_64;fedora
-qt6-qtquickcontrols2-devel-6.0.1-1.fc34.i686;fedora
-qt6-qtquickcontrols2-devel-6.0.1-1.fc34.x86_64;fedora
-qt6-qtquickcontrols2-examples-6.0.1-1.fc34.x86_64;fedora
-qt6-qtquicktimeline-6.0.1-1.fc34.i686;fedora
-qt6-qtquicktimeline-6.0.1-1.fc34.x86_64;fedora
-qt6-qtquicktimeline-devel-6.0.1-1.fc34.i686;fedora
-qt6-qtquicktimeline-devel-6.0.1-1.fc34.x86_64;fedora
-qt6-qtquick3d-6.1.0-1.fc34.i686;updates
-qt6-qtquick3d-6.1.0-1.fc34.x86_64;updates
-qt6-qtquick3d-devel-6.1.0-1.fc34.i686;updates
-qt6-qtquick3d-devel-6.1.0-1.fc34.x86_64;updates
-qt6-qtquick3d-examples-6.1.0-1.fc34.x86_64;updates
-qt6-qtquickcontrols2-6.1.0-1.fc34.i686;updates
-qt6-qtquickcontrols2-6.1.0-1.fc34.x86_64;updates
-qt6-qtquickcontrols2-devel-6.1.0-1.fc34.i686;updates
-qt6-qtquickcontrols2-devel-6.1.0-1.fc34.x86_64;updates
-qt6-qtquickcontrols2-examples-6.1.0-1.fc34.x86_64;updates
-qt6-qtquicktimeline-6.1.0-1.fc34.i686;updates
-qt6-qtquicktimeline-6.1.0-1.fc34.x86_64;updates
-qt6-qtquicktimeline-devel-6.1.0-1.fc34.i686;updates
-qt6-qtquicktimeline-devel-6.1.0-1.fc34.x86_64;updates
+================ Installed (3344) ===================
+================ Available (65541) ===================
+================ Updates (42) ===================
 </pre>
 </div>
 </div>
