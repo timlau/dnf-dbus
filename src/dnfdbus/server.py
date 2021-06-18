@@ -92,9 +92,9 @@ class DnfDbusInterface(InterfaceTemplate):
         """ Get Backages by key """
         return self.implementation.get_packages_by_filter(flt, extra)
 
-    def GetPackageAttribute(self, pkg: str, attribute: str, reponame: str) -> Str:
+    def GetPackageAttribute(self, pkg: str, reponame: str, attribute: str) -> Str:
         """ Get attribute for a given package """
-        return self.implementation.get_package_attribute(pkg, attribute, reponame)
+        return self.implementation.get_package_attribute(pkg, reponame, attribute)
 
     def TestSignals(self) -> None:
         return self.implementation.test_signals()
@@ -111,9 +111,7 @@ class DnfDbusInterface(InterfaceTemplate):
     def Quitting(self):  # type: ignore
         pass
 
-
 # Implementation of the DnfDbusInterface
-
 
 class DnfDbus(Publishable):
 
@@ -183,9 +181,9 @@ class DnfDbus(Publishable):
             return self.working_ended(json.dumps([pkg.dump for pkg in pkgs]))
 
     @logger
-    def get_package_attribute(self, pkg: str, attribute: str, reponame: str) -> str:
+    def get_package_attribute(self, pkg: str, reponame: str, attribute: str) -> str:
         self.working_start(write=False)
-        value = self.backend.get_attribute(pkg, attribute, reponame)
+        value = self.backend.get_attribute(pkg, reponame, attribute)
         return self.working_ended(json.dumps(value))
 
     @logger

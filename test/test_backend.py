@@ -113,7 +113,7 @@ class TestDnfBackend(unittest.TestCase):
     def test_get_attribute(self, mock_sbj):
         mock_sbj().get_best_selector().matches.return_value = [FAKE_PKG_1]
         pkg = 'AtomicParsley-0.9.5-17.fc34.x86_64;myrepo'
-        res = self.backend.get_attribute(pkg, 'description', None)
+        res = self.backend.get_attribute(pkg, "", 'description')
         self.assertIsInstance(res, list)
         elem = res[0]
         self.assertIsInstance(elem, tuple)

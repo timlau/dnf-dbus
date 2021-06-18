@@ -41,6 +41,9 @@ if __name__ == "__main__":
     res = client.get_package_attribute(pkg, "", 'changelog')
     print("RESULT:")
     pprint(res)
+    res = client.get_package_attribute(pkg, 'changelog')
+    print("RESULT:")
+    pprint(res)
     pkg = 'qt6-assistant-6.1.0-2.fc34.x86_64'
     print(f'\n====> get_package_attribute({pkg})\n')
     res = client.get_package_attribute(pkg, "", 'description')
