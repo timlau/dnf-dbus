@@ -36,7 +36,7 @@ def check_permission(action):
     subject = ('system-bus-name', {'name': DBUS_SENDER})
     action_id = action
     details = {}
-    flags = 1            # AllowUserInteraction flag
+    flags = 1  # AllowUserInteraction flag
     cancellation_id = ''  # No cancellation id
 
     (granted, _, details) = authority.CheckAuthorization(

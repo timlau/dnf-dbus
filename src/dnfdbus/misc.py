@@ -22,6 +22,7 @@ import sys
 
 log = logging.getLogger('dnfdbus.common')
 
+
 def to_nevra(pkg):
     """ convert pkg string to NEVRA (Name, Epoch, Version, Release, Arch) """
     archIndex = pkg.rfind('.')
@@ -43,6 +44,7 @@ def logger(func):
     """
     This decorator that logs start of end of a called method or function
     """
+
     def newFunc(*args, **kwargs):
         log.debug("=> %s started args: %s " % (func.__name__, repr(args[1:])))
         rc = func(*args, **kwargs)

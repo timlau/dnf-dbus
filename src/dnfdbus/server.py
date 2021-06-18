@@ -111,6 +111,7 @@ class DnfDbusInterface(InterfaceTemplate):
     def Quitting(self):  # type: ignore
         pass
 
+
 # Implementation of the DnfDbusInterface
 
 class DnfDbus(Publishable):

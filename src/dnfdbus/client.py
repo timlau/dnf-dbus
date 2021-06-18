@@ -148,5 +148,5 @@ class DnfDbusClient:
     def get_package_attribute(self, pkg: str, attribute: str, reponame: str):
         res: str = self.async_dbus.call(
             self.proxy.GetPackageAttribute, pkg, attribute, reponame)
-        res=json.loads(res)
+        res = json.loads(res)
         return res

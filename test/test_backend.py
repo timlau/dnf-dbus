@@ -7,7 +7,6 @@ from unittest.mock import MagicMock, Mock, patch
 import dnfdbus.client as client
 from dnfdbus.backend import DnfBackend, DnfPkg, DnfRepository
 
-
 FakeDnfPkg = namedtuple(
     'DnfPkg', "name epoch version release arch reponame summary description")
 
