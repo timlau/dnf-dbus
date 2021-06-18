@@ -64,7 +64,7 @@ test-cleanup:
 	@git checkout -f
 	@git checkout ${GIT_MASTER}
 	@git branch -D release-test
-	@git stash apply
+	@-git stash apply
 
 test-release:
 	$(MAKE) build-setup
