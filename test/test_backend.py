@@ -8,10 +8,13 @@ import dnfdbus.client as client
 from dnfdbus.backend import DnfBackend, DnfPkg, DnfRepository
 
 
-FakeDnfPkg = namedtuple('DnfPkg', "name epoch version release arch reponame summary description")
+FakeDnfPkg = namedtuple(
+    'DnfPkg', "name epoch version release arch reponame summary description")
 
-FAKE_PKG_1 = FakeDnfPkg("AtomicParsley", "0", "0.9.5", "17.fc34", "x86_64", "myrepo", "summary", "description")
-FAKE_PKG_2 = FakeDnfPkg("AtomicParsley", "0", "0.9.5", "17.fc34", "x86_64", "@System", "summary", "description")
+FAKE_PKG_1 = FakeDnfPkg("AtomicParsley", "0", "0.9.5",
+                        "17.fc34", "x86_64", "myrepo", "summary", "description")
+FAKE_PKG_2 = FakeDnfPkg("AtomicParsley", "0", "0.9.5",
+                        "17.fc34", "x86_64", "@System", "summary", "description")
 
 TEST_PKGS = [
     "AtomicParsley-0.9.5-17.fc34.x86_64;myrepo",
@@ -110,7 +113,7 @@ class TestDnfBackend(unittest.TestCase):
     def test_get_attribute(self, mock_sbj):
         mock_sbj().get_best_selector().matches.return_value = [FAKE_PKG_1]
         pkg = 'AtomicParsley-0.9.5-17.fc34.x86_64;myrepo'
-        res = self.backend.get_attribute(pkg, 'description')
+        res = self.backend.get_attribute(pkg, 'description', None)
         self.assertIsInstance(res, list)
         elem = res[0]
         self.assertIsInstance(elem, tuple)
@@ -189,7 +192,8 @@ class TestDnfPackages(unittest.TestCase):
 
     @patch('dnf.subject.Subject')
     def test_find_pkg(self, mock_sbj):
-        mock_sbj().get_best_selector().matches.return_value = [FAKE_PKG_1, FAKE_PKG_2]
+        mock_sbj().get_best_selector().matches.return_value = [
+            FAKE_PKG_1, FAKE_PKG_2]
         pkg = 'AtomicParsley-0.9.5-17.fc34.x86_64'
         res = self.backend.packages.find_pkg(pkg, None)
         self.assertIsInstance(res, list)

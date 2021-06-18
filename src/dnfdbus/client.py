@@ -125,12 +125,14 @@ class DnfDbusClient:
 
     def get_packages_by_key(self, key: str) -> list:
         """ Get packages that matches a key """
-        pkgs = json.loads(self.async_dbus.call(self.proxy.GetPackagesByKey, key))
+        pkgs = json.loads(self.async_dbus.call(
+            self.proxy.GetPackagesByKey, key))
         return [DnfPkg(pkg) for pkg in pkgs]
 
     def get_packages_by_filter(self, flt: str, extra: bool = False) -> list:
         """ Get packages that matches a key """
-        pkgs = json.loads(self.async_dbus.call(self.proxy.GetPackagesByFilter, flt, extra))
+        pkgs = json.loads(self.async_dbus.call(
+            self.proxy.GetPackagesByFilter, flt, extra))
         if extra:
             res = []
             for elem in pkgs:
@@ -143,7 +145,8 @@ class DnfDbusClient:
         else:
             return [DnfPkg(pkg) for pkg in pkgs]
 
-    def get_package_attribute(self, pkg: str, attribute: str):
-        res = self.async_dbus.call(self.proxy.GetPackageAttribute, pkg, attribute)
-        res = json.loads(res)
+    def get_package_attribute(self, pkg: str, attribute: str, reponame: str):
+        res: str = self.async_dbus.call(
+            self.proxy.GetPackageAttribute, pkg, attribute, reponame)
+        res=json.loads(res)
         return res

@@ -148,8 +148,10 @@ class DnfPackages:
         return [DnfPkg(pkg) for pkg in q]
 
     def find_pkg(self, key, reponame):
-        """ find packages the match a key (Ex. '*qt6*') """
+        """ find packages the match a nevra and reponame """
         self.backend.setup()
+        if reponame == "":
+            reponame = None
         subject = dnf.subject.Subject(key)  # type: ignore
         q = subject.get_best_selector(
             self.base.sack, reponame=reponame).matches()
@@ -201,13 +203,8 @@ class DnfBackend:
         self.setup()
         return [DnfRepository(self.base.repos[repo]) for repo in self.base.repos]
 
-    def get_attribute(self, pkg: str, attribute: str):
-        if ';' in pkg:
-            nevra, reponame = pkg.split(';')
-        else:
-            reponame = None
-            nevra = pkg
-        pkgs = self.packages.find_pkg(nevra, reponame)
+    def get_attribute(self, pkg: str, attribute: str, reponame: str):
+        pkgs = self.packages.find_pkg(pkg, reponame)
         value_list = []
         for po in pkgs:
             if hasattr(po, attribute):

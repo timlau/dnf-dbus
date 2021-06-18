@@ -30,17 +30,20 @@ if __name__ == "__main__":
     client = DnfDbusClient()
     print(client.version)
 
-    pkg = 'qt6-assistant-6.1.0-2.fc34.x86_64;@System'
+    pkg = 'qt6-assistant-6.1.0-2.fc34.x86_64'
     print(f'\n====> get_package_attribute({pkg})\n')
-    res = client.get_package_attribute(pkg, 'description')
+    res = client.get_package_attribute(pkg, '@System', 'description')
     print("RESULT:")
     pprint(res)
-    res = client.get_package_attribute(pkg, 'changelog')
+    res = client.get_package_attribute(pkg, '@System', 'changelog')
+    print("RESULT:")
+    pprint(res)
+    res = client.get_package_attribute(pkg, "", 'changelog')
     print("RESULT:")
     pprint(res)
     pkg = 'qt6-assistant-6.1.0-2.fc34.x86_64'
     print(f'\n====> get_package_attribute({pkg})\n')
-    res = client.get_package_attribute(pkg, 'description')
+    res = client.get_package_attribute(pkg, "", 'description')
     print("RESULT:")
     pprint(res)
     # Quit the running DnfDbus Backend

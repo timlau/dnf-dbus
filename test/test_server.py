@@ -130,7 +130,7 @@ class TestDnfDbus(unittest.TestCase):
         self.dbus.backend.get_attribute.return_value = \
             [('qt6-assistant-6.1.0-2.fc34.x86_64', '@System', 'Documentation browser for Qt6.'),
              ('qt6-assistant-6.1.0-2.fc34.x86_64', 'updates', 'Documentation browser for Qt6.')]
-        res = json.loads(self.dbus.get_package_attribute(pkg, "description"))
+        res = json.loads(self.dbus.get_package_attribute(pkg, None, "description"))
         self.assertIsInstance(res, list)
         self.assertEqual(2, len(res))
         elem = res[0]

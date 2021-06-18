@@ -18,13 +18,13 @@ if os.geteuid() != 0:
 
 b = DnfBackend(dnf.Base())
 
-pkg = 'qt6-assistant-6.1.0-2.fc34.x86_64;@System'
+pkg = 'qt6-assistant-6.1.0-2.fc34.x86_64'
 print(f'\n====> get_attribute({pkg})\n')
-res = b.get_attribute(pkg, 'description')
+res = b.get_attribute(pkg, "@System", 'description')
 print("RESULT:")
 pprint(res)
 pkg = 'qt6-assistant-6.1.0-2.fc34.x86_64'
 print(f'\n====> get_attribute({pkg})\n')
-res = b.get_attribute(pkg, 'description')
+res = b.get_attribute(pkg, "", 'description')
 print("RESULT:")
 pprint(res)

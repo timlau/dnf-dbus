@@ -124,8 +124,8 @@ class TestClient(unittest.TestCase):
         self.client.async_dbus.call.return_value = json.dumps(
             [('qt6-assistant-6.1.0-2.fc34.x86_64', '@System', 'Documentation browser for Qt6.'),
              ('qt6-assistant-6.1.0-2.fc34.x86_64', 'updates', 'Documentation browser for Qt6.')])
-        res = self.client.get_package_attribute("qt6-assistant-6.1.0-2.fc34.x86_64", "description")
-        self.check_async_called('GetPackageAttribute', "qt6-assistant-6.1.0-2.fc34.x86_64", "description")
+        res = self.client.get_package_attribute("qt6-assistant-6.1.0-2.fc34.x86_64", None,"description")
+        self.check_async_called('GetPackageAttribute', "qt6-assistant-6.1.0-2.fc34.x86_64", None, "description")
         self.assertIsInstance(res, list)
         self.assertEqual(2, len(res))
         elem = res[0]
