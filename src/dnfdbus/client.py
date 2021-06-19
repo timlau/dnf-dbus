@@ -48,16 +48,16 @@ class DnfPkg:
     summary: str = ""
     size: int = 0
 
-    def __init__(self, po: str) -> None:
-        pkg, self.reponame = po.split(';')
+    def __init__(self, pkg: str, reponame: str) -> None:
+        self.reponame = reponame
         self.name, self.epoch, self.version, self.release, self.arch = to_nevra(
             pkg)
 
     def __repr__(self) -> str:
         if self.epoch == '0':
-            return f'{self.name}-{self.version}-{self.release}.{self.arch};{self.reponame}'
+            return f'{self.name}-{self.version}-{self.release}.{self.arch}'
         else:
-            return f'{self.name}-{self.epoch}:{self.version}-{self.release}.{self.arch};{self.reponame}'
+            return f'{self.name}-{self.epoch}:{self.version}-{self.release}.{self.arch}'
 
     def __str__(self) -> str:
         return self.__repr__()
@@ -124,29 +124,42 @@ class DnfDbusClient:
         return [DnfRepo(repo) for repo in repos]
 
     def get_packages_by_key(self, key: str) -> list:
-        """ Get packages that matches a key """
+        """ Get packages that matches a key
+        @param key: key with wildcards for packages to matck
+        @return: list of packages
+        """
         pkgs = json.loads(self.async_dbus.call(
             self.proxy.GetPackagesByKey, key))
-        return [DnfPkg(pkg) for pkg in pkgs]
+        return [DnfPkg(elem[0], elem[1]) for elem in pkgs]
 
     def get_packages_by_filter(self, flt: str, extra: bool = False) -> list:
-        """ Get packages that matches a key """
+        """ Get packages that matches a filter
+        @param flt: package filter ('installed', 'updates')
+        @param extra: extra info on packages (summary & size)
+        @return: list of packages
+        """
         pkgs = json.loads(self.async_dbus.call(
             self.proxy.GetPackagesByFilter, flt, extra))
         if extra:
             res = []
             for elem in pkgs:
-                pkg, summary, size = elem
-                po = DnfPkg(pkg)
+                pkg, repo, summary, size = elem
+                po = DnfPkg(pkg, repo)
                 po.summary = summary
                 po.size = size
                 res.append(po)
             return res
         else:
-            return [DnfPkg(pkg) for pkg in pkgs]
+            return [DnfPkg(elem[0], elem[1]) for elem in pkgs]
 
-    def get_package_attribute(self, pkg: str, attribute: str, reponame: str):
+    def get_package_attribute(self, pkg: str, reponame: str, attribute: str):
+        """ Get Atrributes for a package filter
+        @param pkg: package filter (can include wildcards)
+        @param attribute: attribute to return
+        @param reponame: reponame to limit to a given repo ("" = all repos)
+        @return: list with (packagename, reponame, list of attribute values) pairs
+        """
         res: str = self.async_dbus.call(
-            self.proxy.GetPackageAttribute, pkg, attribute, reponame)
+            self.proxy.GetPackageAttribute, pkg, reponame, attribute)
         res = json.loads(res)
         return res

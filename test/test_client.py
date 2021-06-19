@@ -8,7 +8,7 @@ from dnfdbus.client import DnfDbusClient, DnfPkg, DnfRepo
 class TestDnfPkg(unittest.TestCase):
 
     def testDnfPkg(self):
-        pkg = DnfPkg('foo-too-loo-3:2.3.0-1.fc34.noarch;myrepo')
+        pkg = DnfPkg('foo-too-loo-3:2.3.0-1.fc34.noarch', 'myrepo')
         self.assertEqual(pkg.name, 'foo-too-loo')
         self.assertEqual(pkg.epoch, '3')
         self.assertEqual(pkg.version, '2.3.0')
@@ -69,7 +69,7 @@ class TestClient(unittest.TestCase):
         """ Test get_packages_by_key() method"""
         self.client.async_dbus = MagicMock()
         self.client.async_dbus.call.return_value = json.dumps(
-            ['foo-too-loo-3:2.3.0-1.fc34.noarch;myrepo'])
+            [['foo-too-loo-3:2.3.0-1.fc34.noarch', 'myrepo']])
         pkgs = self.client.get_packages_by_key("*too-loo*")
         self.check_async_called('GetPackagesByKey', "*too-loo*")
         self.assertIsInstance(pkgs, list)
@@ -86,7 +86,7 @@ class TestClient(unittest.TestCase):
         """ Test get_packages_by_key() method"""
         self.client.async_dbus = MagicMock()
         self.client.async_dbus.call.return_value = json.dumps(
-            ['foo-too-loo-3:2.3.0-1.fc34.noarch;myrepo'])
+            [['foo-too-loo-3:2.3.0-1.fc34.noarch', 'myrepo']])
         pkgs = self.client.get_packages_by_filter("installed", False)
         self.check_async_called('GetPackagesByFilter', "installed", False)
         self.assertIsInstance(pkgs, list)
@@ -103,7 +103,7 @@ class TestClient(unittest.TestCase):
         """ Test get_packages_by_key() method"""
         self.client.async_dbus = MagicMock()
         self.client.async_dbus.call.return_value = json.dumps(
-            [['foo-too-loo-3:2.3.0-1.fc34.noarch;myrepo', 'package summary', 100000]])
+            [['foo-too-loo-3:2.3.0-1.fc34.noarch', 'myrepo', 'package summary', 100000]])
         pkgs = self.client.get_packages_by_filter("installed", True)
         self.check_async_called('GetPackagesByFilter', "installed", True)
         self.assertIsInstance(pkgs, list)
@@ -124,8 +124,8 @@ class TestClient(unittest.TestCase):
         self.client.async_dbus.call.return_value = json.dumps(
             [('qt6-assistant-6.1.0-2.fc34.x86_64', '@System', 'Documentation browser for Qt6.'),
              ('qt6-assistant-6.1.0-2.fc34.x86_64', 'updates', 'Documentation browser for Qt6.')])
-        res = self.client.get_package_attribute("qt6-assistant-6.1.0-2.fc34.x86_64", None, "description")
-        self.check_async_called('GetPackageAttribute', "qt6-assistant-6.1.0-2.fc34.x86_64", None, "description")
+        res = self.client.get_package_attribute("qt6-assistant-6.1.0-2.fc34.x86_64", "", "description")
+        self.check_async_called('GetPackageAttribute', "qt6-assistant-6.1.0-2.fc34.x86_64", "", "description")
         self.assertIsInstance(res, list)
         self.assertEqual(2, len(res))
         elem = res[0]

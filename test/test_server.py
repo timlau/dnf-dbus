@@ -108,7 +108,7 @@ class TestDnfDbus(unittest.TestCase):
         pkgs_mock.by_key.return_value = [DnfPkg(FakePkg())]
         res = self.dbus.get_packages_by_key("foobar")
         self.assertIsInstance(res, str)
-        self.assertEqual(res, '["foo-too-loo-3:2.3.0-1.fc34.noarch;myrepo"]')
+        self.assertEqual(res, '[["foo-too-loo-3:2.3.0-1.fc34.noarch", "myrepo"]]')
 
     def test_get_packages_by_filter(self):
         self._overload_permission()
@@ -118,7 +118,7 @@ class TestDnfDbus(unittest.TestCase):
         pkgs_mock.by_filter.return_value = [fake_po]
         res = self.dbus.get_packages_by_filter("installed", False)
         self.assertIsInstance(res, str)
-        self.assertEqual(res, '["foo-too-loo-3:2.3.0-1.fc34.noarch;myrepo"]')
+        self.assertEqual(res, '[["foo-too-loo-3:2.3.0-1.fc34.noarch", "myrepo"]]')
         # Test with extra = True
         res = json.loads(self.dbus.get_packages_by_filter("installed", True))
         self.assertIsInstance(res, list)

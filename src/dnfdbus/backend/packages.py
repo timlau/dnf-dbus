@@ -79,11 +79,11 @@ class DnfPkg:
 
     @property
     def dump_list(self):
-        return [f'{str(self.pkg)};{self.reponame}', self.summary, self.size]
+        return [str(self.pkg), self.reponame, self.summary, self.size]
 
     @property
     def dump(self) -> str:
-        return f'{str(self.pkg)};{self.reponame}'
+        return [str(self.pkg), self.reponame]
 
 
 class DnfPackages:

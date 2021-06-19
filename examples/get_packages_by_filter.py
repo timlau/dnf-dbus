@@ -32,11 +32,11 @@ if __name__ == "__main__":
     pkgs = client.get_packages_by_filter("installed", True)
     print(f"================ Installed ({len(pkgs)}) ===================")
     for pkg in pkgs:
-        print(f'{pkg}  : {pkg.summary} : {pkg.size}')
+        print(f'{pkg} ({pkg.reponame}) : {pkg.summary} : {pkg.size}')
     pkgs = client.get_packages_by_filter("available", True)
     print(f"================ Available ({len(pkgs)}) ===================")
     for pkg in pkgs:
-        print(f'{pkg}  : {pkg.summary} : {pkg.size}')
+        print(f'{pkg} ({pkg.reponame}) : {pkg.summary} : {pkg.size}')
     pkgs = client.get_packages_by_filter("updates")
     print(f"================ Updates ({len(pkgs)}) ===================")
     # Quit the running DnfDbus Backend

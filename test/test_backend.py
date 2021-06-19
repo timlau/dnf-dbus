@@ -18,19 +18,19 @@ FAKE_PKG_2 = FakeDnfPkg("AtomicParsley", "0", "0.9.5",
                         "17.fc34", "x86_64", "@System", "summary", "description")
 
 TEST_PKGS = [
-    "AtomicParsley-0.9.5-17.fc34.x86_64;myrepo",
-    "Box2D-2.4.1-5.fc34.x86_64;myrepo",
-    "Carla-1:2.3.0-1.fc34.x86_64;myrepo",
-    "Carla-vst-1:2.3.0-1.fc34.x86_64;myrepo",
-    "GraphicsMagick-1.3.36-3.fc34.x86_64;myrepo",
-    "ModemManager-1.16.4-1.fc34.x86_64;myrepo",
-    "ModemManager-glib-1.16.4-1.fc34.x86_64;myrepo",
-    "NetworkManager-1:1.30.4-1.fc34.x86_64;myrepo",
-    "NetworkManager-adsl-1:1.30.4-1.fc34.x86_64;myrepo",
-    "NetworkManager-bluetooth-1:1.30.4-1.fc34.x86_64;myrepo",
+    ("AtomicParsley-0.9.5-17.fc34.x86_64", "myrepo"),
+    ("Box2D-2.4.1-5.fc34.x86_64", "myrepo"),
+    ("Carla-1:2.3.0-1.fc34.x86_64", "myrepo"),
+    ("Carla-vst-1:2.3.0-1.fc34.x86_64", "myrepo"),
+    ("GraphicsMagick-1.3.36-3.fc34.x86_64", "myrepo"),
+    ("ModemManager-1.16.4-1.fc34.x86_64", "myrepo"),
+    ("ModemManager-glib-1.16.4-1.fc34.x86_64", "myrepo"),
+    ("NetworkManager-1:1.30.4-1.fc34.x86_64", "myrepo"),
+    ("NetworkManager-adsl-1:1.30.4-1.fc34.x86_64", "myrepo"),
+    ("NetworkManager-bluetooth-1:1.30.4-1.fc34.x86_64", "myrepo"),
 ]
 
-TEST_PKG_LIST = [client.DnfPkg(pkg) for pkg in TEST_PKGS]
+TEST_PKG_LIST = [client.DnfPkg(pkg, repo) for (pkg, repo) in TEST_PKGS]
 
 # define the allowed method of the Dnf Base Mock
 DNF_MOCK_SPEC = [
