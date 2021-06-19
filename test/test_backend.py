@@ -30,7 +30,7 @@ TEST_PKGS = [
     ("NetworkManager-bluetooth-1:1.30.4-1.fc34.x86_64", "myrepo"),
 ]
 
-TEST_PKG_LIST = [client.DnfPkg(pkg, repo) for (pkg, repo) in TEST_PKGS]
+TEST_PKG_LIST = [client.Package(pkg, repo) for (pkg, repo) in TEST_PKGS]
 
 # define the allowed method of the Dnf Base Mock
 DNF_MOCK_SPEC = [

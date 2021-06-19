@@ -26,7 +26,7 @@ from dasbus.loop import EventLoop
 
 
 @dataclass(repr=True)
-class DnfRepo:
+class Repository:
     """ Wrapper class for a dnf repository"""
     id: str
     name: str
@@ -37,7 +37,7 @@ class DnfRepo:
 
 
 @dataclass
-class DnfPkg:
+class Package:
     """ Wrapper class for a dnf package"""
     name: str
     epoch: str
@@ -54,13 +54,13 @@ class DnfPkg:
             pkg)
 
     def __repr__(self) -> str:
+        return f'Package({str(self)})'
+
+    def __str__(self) -> str:
         if self.epoch == '0':
             return f'{self.name}-{self.version}-{self.release}.{self.arch}'
         else:
             return f'{self.name}-{self.epoch}:{self.version}-{self.release}.{self.arch}'
-
-    def __str__(self) -> str:
-        return self.__repr__()
 
 
 # Classes
@@ -121,7 +121,7 @@ class DnfDbusClient:
     def get_repositories(self) -> list:
         """ Get all configured repositories """
         repos = json.loads(self.proxy.GetRepositories())
-        return [DnfRepo(repo) for repo in repos]
+        return [Repository(repo) for repo in repos]
 
     def get_packages_by_key(self, key: str) -> list:
         """ Get packages that matches a key
@@ -130,7 +130,7 @@ class DnfDbusClient:
         """
         pkgs = json.loads(self.async_dbus.call(
             self.proxy.GetPackagesByKey, key))
-        return [DnfPkg(elem[0], elem[1]) for elem in pkgs]
+        return [Package(elem[0], elem[1]) for elem in pkgs]
 
     def get_packages_by_filter(self, flt: str, extra: bool = False) -> list:
         """ Get packages that matches a filter
@@ -144,13 +144,13 @@ class DnfDbusClient:
             res = []
             for elem in pkgs:
                 pkg, repo, summary, size = elem
-                po = DnfPkg(pkg, repo)
+                po = Package(pkg, repo)
                 po.summary = summary
                 po.size = size
                 res.append(po)
             return res
         else:
-            return [DnfPkg(elem[0], elem[1]) for elem in pkgs]
+            return [Package(elem[0], elem[1]) for elem in pkgs]
 
     def get_package_attribute(self, pkg: str, reponame: str, attribute: str):
         """ Get Atrributes for a package filter

@@ -2,25 +2,27 @@ import json
 import unittest
 from unittest.mock import MagicMock
 
-from dnfdbus.client import DnfDbusClient, DnfPkg, DnfRepo
+from dnfdbus.client import DnfDbusClient, Package, Repository
 
 
-class TestDnfPkg(unittest.TestCase):
+class TestPackage(unittest.TestCase):
 
-    def testDnfPkg(self):
-        pkg = DnfPkg('foo-too-loo-3:2.3.0-1.fc34.noarch', 'myrepo')
+    def testPackage(self):
+        pkg = Package('foo-too-loo-3:2.3.0-1.fc34.noarch', 'myrepo')
         self.assertEqual(pkg.name, 'foo-too-loo')
         self.assertEqual(pkg.epoch, '3')
         self.assertEqual(pkg.version, '2.3.0')
         self.assertEqual(pkg.release, '1.fc34')
         self.assertEqual(pkg.arch, 'noarch')
         self.assertEqual(pkg.reponame, 'myrepo')
+        self.assertEqual(str(pkg), 'foo-too-loo-3:2.3.0-1.fc34.noarch')
+        self.assertEqual(repr(pkg), 'Package(foo-too-loo-3:2.3.0-1.fc34.noarch)')
 
 
-class TestDnfRepo(unittest.TestCase):
+class TestRepository(unittest.TestCase):
 
-    def testDnfRepo(self):
-        repo = DnfRepo({'id': "repo-id", "name": "repo name", 'enabled': True})
+    def testRepository(self):
+        repo = Repository({'id': "repo-id", "name": "repo name", 'enabled': True})
         self.assertEqual(repo.id, "repo-id")
         self.assertEqual(repo.name, "repo name")
         self.assertEqual(repo.enabled, True)
@@ -51,7 +53,7 @@ class TestClient(unittest.TestCase):
         repos = self.client.get_repositories()
         self.assertIsInstance(repos, list)
         repo = repos[0]
-        self.assertIsInstance(repo, DnfRepo)
+        self.assertIsInstance(repo, Repository)
         self.assertEqual(repo.id, "repo-id")
         self.assertEqual(repo.name, "repo name")
 
@@ -74,7 +76,7 @@ class TestClient(unittest.TestCase):
         self.check_async_called('GetPackagesByKey', "*too-loo*")
         self.assertIsInstance(pkgs, list)
         pkg = pkgs[0]
-        self.assertIsInstance(pkg, DnfPkg)
+        self.assertIsInstance(pkg, Package)
         self.assertEqual(pkg.name, 'foo-too-loo')
         self.assertEqual(pkg.epoch, '3')
         self.assertEqual(pkg.version, '2.3.0')
@@ -91,7 +93,7 @@ class TestClient(unittest.TestCase):
         self.check_async_called('GetPackagesByFilter', "installed", False)
         self.assertIsInstance(pkgs, list)
         pkg = pkgs[0]
-        self.assertIsInstance(pkg, DnfPkg)
+        self.assertIsInstance(pkg, Package)
         self.assertEqual(pkg.name, 'foo-too-loo')
         self.assertEqual(pkg.epoch, '3')
         self.assertEqual(pkg.version, '2.3.0')
@@ -108,7 +110,7 @@ class TestClient(unittest.TestCase):
         self.check_async_called('GetPackagesByFilter', "installed", True)
         self.assertIsInstance(pkgs, list)
         pkg = pkgs[0]
-        self.assertIsInstance(pkg, DnfPkg)
+        self.assertIsInstance(pkg, Package)
         self.assertEqual(pkg.name, 'foo-too-loo')
         self.assertEqual(pkg.epoch, '3')
         self.assertEqual(pkg.version, '2.3.0')
