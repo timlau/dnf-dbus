@@ -64,11 +64,11 @@ test-cleanup:
 	@git checkout -f
 	@git checkout ${GIT_MASTER}
 	@git branch -D release-test
-	@-git stash apply
+	@git stash apply ; true
 
 test-release:
 	$(MAKE) build-setup
-	@git stash push
+	@git stash push; true
 	@git checkout -b release-test
 	# +1 Minor version and add 0.1-gitYYYYMMDD release
 	@cat ${APPNAME}.spec | sed  -e 's/${VER_REGEX}/\1${BUMPED_MINOR}/' -e 's/\(^Release:\s*\)\([0-9]*\)\(.*\)./\10.1.${GITDATE}%{?dist}/' > ${APPNAME}-test.spec ; mv ${APPNAME}-test.spec ${APPNAME}.spec
@@ -77,7 +77,7 @@ test-release:
 	@rm -rf ${APPNAME}-${NEW_VER}.tar.gz
 	@git archive --format=tar --prefix=$(PKGNAME)-$(NEW_VER)/ HEAD | xz >build/SOURCES/${PKGNAME}-$(NEW_VER).tar.xz
 	# Build RPMS 
-	@-rpmbuild --define '_topdir $(BUILDDIR)' -ba ${PKGNAME}.spec
+	@rpmbuild --define '_topdir $(BUILDDIR)' -ba ${PKGNAME}.spec ; true
 	@$(MAKE) test-cleanup
 
 test-reinst:
