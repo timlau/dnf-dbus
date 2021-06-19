@@ -62,6 +62,13 @@ class DnfBackend:
         return [DnfRepository(self.base.repos[repo]) for repo in self.base.repos]
 
     def get_attribute(self, pkg: str, reponame: str, attribute: str):
+        """
+        Get attribute from package(s)
+        @param pkg: package key
+        @param reponame: reponame ("" = all repos)
+        @param attribute: attribute name to get from dnf package
+        @return: list of (package, reponame, attribute values)
+        """
         if attribute == 'changelog':
             if not self._changelogs:
                 self.setup(changelogs=True, refresh=True)
@@ -70,8 +77,6 @@ class DnfBackend:
         for po in pkgs:
             if hasattr(po, attribute):
                 value = getattr(po, attribute)
-                if isinstance(value, list):
-                    value = value[0:2]
             else:
                 value = None
             elem = (str(po), po.reponame, value)
