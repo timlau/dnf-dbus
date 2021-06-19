@@ -113,6 +113,7 @@ class DnfDbusClient:
         return self
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
+        print(f'{exc_type=} {exc_value=} {exc_traceback=}')
         self.quit()
 
     @property
@@ -131,8 +132,12 @@ class DnfDbusClient:
 
     def get_packages_by_key(self, key: str) -> list:
         """ Get packages that matches a key
-        @param key: key with wildcards for packages to matck
-        @return: list of packages
+
+        Args:
+            key: key with wildcards for packages to matck
+
+        Returns:
+            list of packages
         """
         pkgs = json.loads(self.async_dbus.call(
             self.proxy.GetPackagesByKey, key))
@@ -140,9 +145,13 @@ class DnfDbusClient:
 
     def get_packages_by_filter(self, flt: str, extra: bool = False) -> list:
         """ Get packages that matches a filter
-        @param flt: package filter ('installed', 'updates')
-        @param extra: extra info on packages (summary & size)
-        @return: list of packages
+
+        Args:
+            flt: package filter ('installed', 'updates')
+            extra: get extra info on packages flag (summary & size)
+
+        Returns:
+            list of packages
         """
         pkgs = json.loads(self.async_dbus.call(
             self.proxy.GetPackagesByFilter, flt, extra))
@@ -160,10 +169,14 @@ class DnfDbusClient:
 
     def get_package_attribute(self, pkg: str, reponame: str, attribute: str):
         """ Get Atrributes for a package filter
-        @param pkg: package filter (can include wildcards)
-        @param attribute: attribute to return
-        @param reponame: reponame to limit to a given repo ("" = all repos)
-        @return: list with (packagename, reponame, list of attribute values) pairs
+
+        Args:
+            pkg: package filter (can include wildcards)
+            reponame: reponame to limit to a given repo ("" = all repos)
+            attribute: attribute to return
+
+        Returns:
+            list with (packagename, reponame, list of attribute values) pairs
         """
         res: str = self.async_dbus.call(
             self.proxy.GetPackageAttribute, pkg, reponame, attribute)
