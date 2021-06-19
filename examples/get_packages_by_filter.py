@@ -25,19 +25,16 @@ from dnfdbus.misc import do_log_setup
 if __name__ == "__main__":
     # Setup client to talk to the DnfDbus Backend
     do_log_setup(loglvl=logging.DEBUG)
-    client = DnfDbusClient()
-    print(client.version)
-
-    # Get packages matching at filter with wildcards
-    pkgs = client.get_packages_by_filter("installed", True)
-    print(f"================ Installed ({len(pkgs)}) ===================")
-    for pkg in pkgs:
-        print(f'{pkg} ({pkg.reponame}) : {pkg.summary} : {pkg.size}')
-    pkgs = client.get_packages_by_filter("available", True)
-    print(f"================ Available ({len(pkgs)}) ===================")
-    for pkg in pkgs:
-        print(f'{pkg} ({pkg.reponame}) : {pkg.summary} : {pkg.size}')
-    pkgs = client.get_packages_by_filter("updates")
-    print(f"================ Updates ({len(pkgs)}) ===================")
-    # Quit the running DnfDbus Backend
-    client.quit()
+    with DnfDbusClient() as client:
+        print(client.version)
+        # Get packages matching at filter with wildcards
+        pkgs = client.get_packages_by_filter("installed", True)
+        print(f"================ Installed ({len(pkgs)}) ===================")
+        for pkg in pkgs:
+            print(f'{pkg} ({pkg.reponame}) : {pkg.summary} : {pkg.size}')
+        pkgs = client.get_packages_by_filter("available", True)
+        print(f"================ Available ({len(pkgs)}) ===================")
+        for pkg in pkgs:
+            print(f'{pkg} ({pkg.reponame}) : {pkg.summary} : {pkg.size}')
+        pkgs = client.get_packages_by_filter("updates")
+        print(f"================ Updates ({len(pkgs)}) ===================")

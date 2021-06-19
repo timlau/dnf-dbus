@@ -25,13 +25,10 @@ from dnfdbus.misc import do_log_setup
 if __name__ == "__main__":
     # Setup client to talk to the DnfDbus Backend
     do_log_setup(loglvl=logging.DEBUG)
-    client = DnfDbusClient()
-    print(client.version)
+    with DnfDbusClient() as client:
+        print(client.version)
+        # Get packages matching at filter with wildcards
+        pkgs = client.get_packages_by_key("*qt6-qtquick*")
+        for pkg in pkgs:
+            print(pkg)
 
-    # Get packages matching at filter with wildcards
-    pkgs = client.get_packages_by_key("*qt6-qtquick*")
-    for pkg in pkgs:
-        print(pkg)
-
-    # Quit the running DnfDbus Backend
-    client.quit()

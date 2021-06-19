@@ -109,6 +109,12 @@ class DnfDbusClient:
         self.proxy = DNFDBUS.get_proxy()
         self.async_dbus = AsyncDbusCaller()
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        self.quit()
+
     @property
     def version(self) -> str:
         """ Get the version from dk.rasmil.DnfDbus daemon"""
