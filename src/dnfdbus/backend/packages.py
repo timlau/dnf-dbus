@@ -16,34 +16,10 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
 """
-dnfdbus.dnf module
+dnfdbus.backend.packages module
 """
+
 import dnf
-
-
-class DnfRepository:
-    """
-    Wrapper for the dnf.repo.Repo class
-    """
-
-    def __init__(self, repo) -> None:
-        self.repo = repo
-
-    @property
-    def id(self):
-        return self.repo.id
-
-    @property
-    def name(self):
-        return self.repo.name
-
-    @property
-    def enabled(self):
-        return self.repo.enabled
-
-    @property
-    def dump(self) -> dict:
-        return {'id': self.id, 'name': self.name, 'enabled': self.enabled}
 
 
 class DnfPkg:
@@ -152,7 +128,6 @@ class DnfPackages:
         self.backend.setup()
         if reponame == "":
             reponame = None
-        print(nevra, reponame)
         subject = dnf.subject.Subject(nevra)  # type: ignore
         q = subject.get_best_selector(
             self.base.sack, reponame=reponame).matches()
@@ -176,43 +151,3 @@ class DnfPackages:
             return self.updates
         else:
             return []
-
-
-class DnfBackend:
-
-    def __init__(self, base=None) -> None:
-        self.base = base or dnf.Base()
-        self.is_setup = False
-        self._packages = None
-
-    @property
-    def packages(self):
-        """ Get tha package object"""
-        if not self._packages:
-            self._packages = DnfPackages(self)
-        return self._packages
-
-    def setup(self):
-        """ Setup Dnf load repository info & fill the sack """
-        if not self.is_setup:
-            _ = self.base.read_all_repos()
-            _ = self.base.fill_sack_from_repos_in_cache()
-            self.is_setup = True
-
-    def get_repositories(self) -> list:
-        """ Get list of repositories"""
-        self.setup()
-        return [DnfRepository(self.base.repos[repo]) for repo in self.base.repos]
-
-    def get_attribute(self, pkg: str, reponame: str, attribute: str):
-        pkgs = self.packages.find_pkg(pkg, reponame)
-        value_list = []
-        for po in pkgs:
-            if hasattr(po, attribute):
-                value = getattr(po, attribute)
-            else:
-                value = None
-            elem = (str(po), po.reponame, value)
-            value_list.append(elem)
-
-        return value_list

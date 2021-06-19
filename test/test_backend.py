@@ -5,7 +5,9 @@ from collections import namedtuple
 from unittest.mock import MagicMock, Mock, patch
 
 import dnfdbus.client as client
-from dnfdbus.backend import DnfBackend, DnfPkg, DnfRepository
+from dnfdbus.backend.repo import DnfRepository
+from dnfdbus.backend.packages import DnfPkg
+from dnfdbus.backend import DnfBackend
 
 FakeDnfPkg = namedtuple(
     'DnfPkg', "name epoch version release arch reponame summary description")

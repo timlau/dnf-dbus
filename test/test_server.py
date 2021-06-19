@@ -3,7 +3,8 @@ import json
 from dataclasses import dataclass
 from unittest.mock import MagicMock, patch
 from dnfdbus.server import DnfDbus, AccessDeniedError
-from dnfdbus.backend import DnfPkg, DnfRepository
+from dnfdbus.backend.packages import DnfPkg
+from dnfdbus.backend.repo import DnfRepository
 
 
 @dataclass
