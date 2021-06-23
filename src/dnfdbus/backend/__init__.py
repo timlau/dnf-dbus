@@ -94,3 +94,6 @@ class DnfBackend:
             value_list.append(elem)
 
         return value_list
+
+    def get_categories(self):
+        return ["Some Category"]

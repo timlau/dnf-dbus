@@ -19,6 +19,9 @@
 
 import logging
 import sys
+import json
+from dasbus.loop import EventLoop
+
 
 log = logging.getLogger('dnfdbus.common')
 
@@ -67,3 +70,20 @@ def do_log_setup(logroot='dnfdbus', logfmt='%(asctime)s: %(message)s',
     handler.setFormatter(formatter)
     log.propagate = False
     log.addHandler(handler)
+
+
+class AsyncDbusCaller:
+    def __init__(self):
+        self.res = None
+        self.loop = None
+
+    def callback(self, call):
+        self.res = call()
+        self.loop.quit()
+
+    def call(self, mth, *args, **kwargs):
+        self.loop = EventLoop()
+        mth(*args, **kwargs, callback=self.callback)
+        self.loop.run()
+        return json.loads(self.res)
+

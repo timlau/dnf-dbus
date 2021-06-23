@@ -16,13 +16,15 @@ class TestPackage(unittest.TestCase):
         self.assertEqual(pkg.arch, 'noarch')
         self.assertEqual(pkg.reponame, 'myrepo')
         self.assertEqual(str(pkg), 'foo-too-loo-3:2.3.0-1.fc34.noarch')
-        self.assertEqual(repr(pkg), 'Package(foo-too-loo-3:2.3.0-1.fc34.noarch)')
+        self.assertEqual(
+            repr(pkg), 'Package(foo-too-loo-3:2.3.0-1.fc34.noarch)')
 
 
 class TestRepository(unittest.TestCase):
 
     def testRepository(self):
-        repo = Repository({'id': "repo-id", "name": "repo name", 'enabled': True})
+        repo = Repository(
+            {'id': "repo-id", "name": "repo name", 'enabled': True})
         self.assertEqual(repo.id, "repo-id")
         self.assertEqual(repo.name, "repo name")
         self.assertEqual(repo.enabled, True)
@@ -33,6 +35,10 @@ class TestClient(unittest.TestCase):
     def setUp(self):
         self.client = DnfDbusClient()
         self.client.proxy = MagicMock()
+        self.mock_async = MagicMock()
+        self.mock_async_method = MagicMock()
+        self.client.get_async_method = self.mock_async
+        self.mock_async.return_value = self.mock_async_method
 
     def testVersion(self):
         """ Test version property """
@@ -48,32 +54,23 @@ class TestClient(unittest.TestCase):
 
     def testGetRepoitories(self):
         """ Test get_repositories() method """
-        self.client.proxy.GetRepositories.return_value = json.dumps(
-            [{'id': "repo-id", "name": "repo name", 'enabled': True}])
+        self.mock_async_method.return_value = [
+            {'id': "repo-id", "name": "repo name", 'enabled': True}]
         repos = self.client.get_repositories()
+        self.mock_async.assert_called_with('GetRepositories')
         self.assertIsInstance(repos, list)
         repo = repos[0]
         self.assertIsInstance(repo, Repository)
         self.assertEqual(repo.id, "repo-id")
         self.assertEqual(repo.name, "repo name")
 
-    def check_async_called(self, name, *args):
-        # Check the expected parameters of the DnfDbusClient.async_dbus.call(arg0, arg1, .., argN)
-        mock = self.client.async_dbus.call.call_args[0][0]  # first parameters
-        params = self.client.async_dbus.call.call_args[0][1:]  # the rest of the parameters
-        self.assertEqual(mock._mock_name, name)
-        ndx = 0
-        for arg in args:
-            self.assertEqual(arg, params[ndx])
-            ndx += 1
-
     def testGetPackagesByKey(self):
         """ Test get_packages_by_key() method"""
-        self.client.async_dbus = MagicMock()
-        self.client.async_dbus.call.return_value = json.dumps(
-            [['foo-too-loo-3:2.3.0-1.fc34.noarch', 'myrepo']])
+        self.mock_async_method.return_value = [
+            ['foo-too-loo-3:2.3.0-1.fc34.noarch', 'myrepo']]
         pkgs = self.client.get_packages_by_key("*too-loo*")
-        self.check_async_called('GetPackagesByKey', "*too-loo*")
+        self.mock_async.assert_called_with("GetPackagesByKey")
+        self.mock_async_method.assert_called_with("*too-loo*")
         self.assertIsInstance(pkgs, list)
         pkg = pkgs[0]
         self.assertIsInstance(pkg, Package)
@@ -85,12 +82,12 @@ class TestClient(unittest.TestCase):
         self.assertEqual(pkg.reponame, 'myrepo')
 
     def testGetPackagesByFilter(self):
-        """ Test get_packages_by_key() method"""
-        self.client.async_dbus = MagicMock()
-        self.client.async_dbus.call.return_value = json.dumps(
-            [['foo-too-loo-3:2.3.0-1.fc34.noarch', 'myrepo']])
+        """ Test get_packages_by_filter() method"""
+        self.mock_async_method.return_value = [
+            ['foo-too-loo-3:2.3.0-1.fc34.noarch', 'myrepo']]
         pkgs = self.client.get_packages_by_filter("installed", False)
-        self.check_async_called('GetPackagesByFilter', "installed", False)
+        self.mock_async.assert_called_with("GetPackagesByFilter")
+        self.mock_async_method.assert_called_with("installed", False)
         self.assertIsInstance(pkgs, list)
         pkg = pkgs[0]
         self.assertIsInstance(pkg, Package)
@@ -103,11 +100,11 @@ class TestClient(unittest.TestCase):
 
     def testGetPackagesByFilterExtra(self):
         """ Test get_packages_by_key() method"""
-        self.client.async_dbus = MagicMock()
-        self.client.async_dbus.call.return_value = json.dumps(
-            [['foo-too-loo-3:2.3.0-1.fc34.noarch', 'myrepo', 'package summary', 100000]])
+        self.mock_async_method.return_value = [
+            ['foo-too-loo-3:2.3.0-1.fc34.noarch', 'myrepo', 'package summary', 100000]]
         pkgs = self.client.get_packages_by_filter("installed", True)
-        self.check_async_called('GetPackagesByFilter', "installed", True)
+        self.mock_async.assert_called_with("GetPackagesByFilter")
+        self.mock_async_method.assert_called_with("installed", True)
         self.assertIsInstance(pkgs, list)
         pkg = pkgs[0]
         self.assertIsInstance(pkg, Package)
@@ -121,13 +118,14 @@ class TestClient(unittest.TestCase):
         self.assertEqual(pkg.summary, 'package summary')
 
     def testGetPackageAttribute(self):
-        """ Test get_packages_by_key() method"""
-        self.client.async_dbus = MagicMock()
-        self.client.async_dbus.call.return_value = json.dumps(
-            [('qt6-assistant-6.1.0-2.fc34.x86_64', '@System', 'Documentation browser for Qt6.'),
-             ('qt6-assistant-6.1.0-2.fc34.x86_64', 'updates', 'Documentation browser for Qt6.')])
-        res = self.client.get_package_attribute("qt6-assistant-6.1.0-2.fc34.x86_64", "", "description")
-        self.check_async_called('GetPackageAttribute', "qt6-assistant-6.1.0-2.fc34.x86_64", "", "description")
+        """ Test get_package_attribues() method"""
+        self.mock_async_method.return_value = [('qt6-assistant-6.1.0-2.fc34.x86_64', '@System', 'Documentation browser for Qt6.'),
+                                               ('qt6-assistant-6.1.0-2.fc34.x86_64', 'updates', 'Documentation browser for Qt6.')]
+        res = self.client.get_package_attribute(
+            "qt6-assistant-6.1.0-2.fc34.x86_64", "", "description")
+        self.mock_async.assert_called_with("GetPackageAttribute")
+        self.mock_async_method.assert_called_with(
+            "qt6-assistant-6.1.0-2.fc34.x86_64", "", "description")
         self.assertIsInstance(res, list)
         self.assertEqual(2, len(res))
         elem = res[0]
@@ -135,3 +133,9 @@ class TestClient(unittest.TestCase):
         self.assertEqual(nevra, 'qt6-assistant-6.1.0-2.fc34.x86_64')
         self.assertEqual(reponame, '@System')
         self.assertEqual(desc, 'Documentation browser for Qt6.')
+
+    def test_GetCategories(self):
+        self.mock_async_method.return_value = ["Category"]
+        res = self.client.get_categories()
+        self.mock_async.assert_called_with("GetCategories")
+        self.assertEqual(res, ['Category'])

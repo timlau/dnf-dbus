@@ -19,8 +19,9 @@
 
 import json
 from dataclasses import dataclass
+from functools import partial
 
-from dnfdbus.misc import to_nevra
+from dnfdbus.misc import to_nevra, log, AsyncDbusCaller
 from dnfdbus.server import DNFDBUS
 from dasbus.loop import EventLoop
 
@@ -63,6 +64,7 @@ class Package:
             return f'{self.name}-{self.epoch}:{self.version}-{self.release}.{self.arch}'
 
 
+
 # Classes
 
 class DnfDbusSignals:
@@ -86,22 +88,6 @@ class DnfDbusSignals:
         self.loop.quit()
 
 
-class AsyncDbusCaller:
-    def __init__(self):
-        self.res = None
-        self.loop = None
-
-    def callback(self, call):
-        self.res = call()
-        self.loop.quit()
-
-    def call(self, mth, *args, **kwargs):
-        self.loop = EventLoop()
-        mth(*args, **kwargs, callback=self.callback)
-        self.loop.run()
-        return self.res
-
-
 class DnfDbusClient:
     """Wrapper class for the dk.rasmil.DnfDbus Dbus object"""
 
@@ -113,8 +99,12 @@ class DnfDbusClient:
         return self
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
-        print(f'{exc_type=} {exc_value=} {exc_traceback=}')
+        if exc_type:
+            log.debug(f'{exc_type=} {exc_value=} {exc_traceback=}')
         self.quit()
+
+    def get_async_method(self, method):
+        return partial(self.async_dbus.call, getattr(self.proxy, method))
 
     @property
     def version(self) -> str:
@@ -127,7 +117,8 @@ class DnfDbusClient:
 
     def get_repositories(self) -> list:
         """ Get all configured repositories """
-        repos = json.loads(self.proxy.GetRepositories())
+        GetRepositories = self.get_async_method('GetRepositories')
+        repos = GetRepositories()
         return [Repository(repo) for repo in repos]
 
     def get_packages_by_key(self, key: str) -> list:
@@ -139,8 +130,8 @@ class DnfDbusClient:
         Returns:
             list of packages
         """
-        pkgs = json.loads(self.async_dbus.call(
-            self.proxy.GetPackagesByKey, key))
+        GetPackagesByKey = self.get_async_method('GetPackagesByKey')
+        pkgs = GetPackagesByKey(key)
         return [Package(elem[0], elem[1]) for elem in pkgs]
 
     def get_packages_by_filter(self, flt: str, extra: bool = False) -> list:
@@ -153,8 +144,8 @@ class DnfDbusClient:
         Returns:
             list of packages
         """
-        pkgs = json.loads(self.async_dbus.call(
-            self.proxy.GetPackagesByFilter, flt, extra))
+        GetPackagesByFilter = self.get_async_method('GetPackagesByFilter')
+        pkgs = GetPackagesByFilter(flt, extra)
         if extra:
             res = []
             for elem in pkgs:
@@ -178,7 +169,9 @@ class DnfDbusClient:
         Returns:
             list with (packagename, reponame, list of attribute values) pairs
         """
-        res: str = self.async_dbus.call(
-            self.proxy.GetPackageAttribute, pkg, reponame, attribute)
-        res = json.loads(res)
-        return res
+        GetPackageAttribute = self.get_async_method('GetPackageAttribute')
+        return GetPackageAttribute(pkg, reponame, attribute)
+
+    def get_categories(self):
+        GetCategories = self.get_async_method('GetCategories')
+        return GetCategories()
