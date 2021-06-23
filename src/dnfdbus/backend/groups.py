@@ -155,7 +155,7 @@ class DnfComps:
                 self._groups[grp.id] = grp
 
     @property
-    def catagories(self) -> list:
+    def categories(self) -> list:
         if not self._categories:
             self._load()
         return list(self._categories.values())
@@ -165,3 +165,22 @@ class DnfComps:
         if not self._groups:
             self._load()
         return list(self._groups.values())
+    
+    def dump_categories(self):
+        res = []
+        for cat in self.categories:
+            elem = [cat.id, cat.name, cat.ui_name, cat.ui_description]
+            res.append(elem)
+        return res
+
+    def dump_groups_by_category(self, category_id):
+        if not self._categories:
+            self._load()
+        res = []
+        if category_id in self._categories:
+            cat = self._categories[category_id]
+            for grp in cat.groups:
+                elem = [grp.id, grp.name, grp.ui_name, grp.ui_description]
+                res.append(elem)
+        return res
+                

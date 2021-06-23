@@ -96,4 +96,7 @@ class DnfBackend:
         return value_list
 
     def get_categories(self):
-        return ["Some Category"]
+        return self.groups.dump_categories()
+
+    def get_group_by_category(self, category_id):
+        return self.groups.dump_groups_by_category(category_id)

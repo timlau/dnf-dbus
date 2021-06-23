@@ -21,19 +21,22 @@ class FakeGroup(Fake):
         return PO_LIST
 
 
-GRP_LIST = [DnfGroup(None, FakeGroup("grp_id", "grp_name", "grp_ui_name", "grp_ui_description"))]
+GRP_LIST = [DnfGroup(None, FakeGroup("grp_id", "grp_name",
+                                     "grp_ui_name", "grp_ui_description"))]
 
 
 class FakeCategory(Fake):
     def groups_iter(self):
         return GRP_LIST
-    
-FAKE_CAT = [FakeCategory("cat_id", "cat_name", "cat_ui_name", "cat_ui_description")]
-    
+
+
+FAKE_CAT = [FakeCategory("cat_id", "cat_name",
+                         "cat_ui_name", "cat_ui_description")]
+
+
 class FakeComps:
     def categories_iter(self):
         return FAKE_CAT
-        
 
 
 class TestDnfGrpPackage(unittest.TestCase):
@@ -113,10 +116,11 @@ class TestDnfCategory(unittest.TestCase):
         grps = self.cat.groups
         self.cat._load.assert_called_once()
         grp = GRP_LIST[0]
-        self.cat._groups = {grp.id : grp}
+        self.cat._groups = {grp.id: grp}
         grps = self.cat.groups
         self.cat._load.assert_called_once()
         self.assertEqual(len(grps), 1)
+
 
 class TestComps(unittest.TestCase):
 
@@ -132,30 +136,42 @@ class TestComps(unittest.TestCase):
         self.assertEqual(None, None)
 
     def test_categories(self):
-        cats = self.comps.catagories
+        cats = self.comps.categories
         self.assertIsInstance(cats, list)
-        self.assertEqual(len(cats),1)
+        self.assertEqual(len(cats), 1)
         cat = cats[0]
-        self.assertIsInstance(cat, DnfCategory)    
+        self.assertIsInstance(cat, DnfCategory)
         self.assertEqual(cat.name, "cat_name")
-    
+
     def test_groups(self):
         grps = self.comps.groups
         self.assertIsInstance(grps, list)
-        self.assertEqual(len(grps),1)
+        self.assertEqual(len(grps), 1)
         grp = grps[0]
-        self.assertIsInstance(grp, DnfGroup)    
+        self.assertIsInstance(grp, DnfGroup)
         self.assertEqual(grp.name, "grp_name")
-        
+
     def test_load(self):
         self.comps._load = MagicMock()
         grps = self.comps.groups
         self.comps._load.assert_called_once()
         grp = GRP_LIST[0]
-        self.comps._groups = {grp.id : grp}
+        self.comps._groups = {grp.id: grp}
         grps = self.comps.groups
         self.comps._load.assert_called_once()
         self.assertEqual(len(grps), 1)
 
-        
-    
+    def test_dump_categories(self):
+        res = self.comps.dump_categories()
+        self.assertIsInstance(res, list)
+        self.assertEqual(len(res), 1)
+        self.assertEqual(res[0], ['cat_id', 'cat_name',
+                                  'cat_ui_name', 'cat_ui_description'])
+
+    def test_dump_groups_by_category(self):
+        res = self.comps.dump_groups_by_category('cat_id')
+        print(self.comps._groups.keys())
+        self.assertIsInstance(res, list)
+        self.assertEqual(len(res), 1)
+        self.assertEqual(res[0], ['grp_id', 'grp_name',
+                                  'grp_ui_name', 'grp_ui_description'])

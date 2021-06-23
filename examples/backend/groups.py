@@ -16,7 +16,7 @@ if os.geteuid() != 0:
     sys.exit(-1)
 
 b = DnfBackend(dnf.Base())
-categories = b.groups.catagories
+categories = b.groups.categories
 print(f'#  of categories : {len(categories)}')
 # for cat in categories:
 #     print(f'{cat.id=} {cat.name=} {cat.ui_name=} {cat.ui_description=}')
@@ -31,3 +31,10 @@ print(grp.name)
 print("========================================================================")
 for pkg in grp.packages:
     print(f' --> {pkg.name=} : {pkg.option_type}')
+    
+cat = categories[0]
+print("========================================================================")
+print(cat.name)
+print("========================================================================")
+grps = b.get_group_by_category(cat.id)
+pprint(grps)
