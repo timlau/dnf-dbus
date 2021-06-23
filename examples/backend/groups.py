@@ -36,5 +36,5 @@ cat = categories[0]
 print("========================================================================")
 print(cat.name)
 print("========================================================================")
-grps = b.get_group_by_category(cat.id)
+grps = b.get_groups_by_category(cat.id)
 pprint(grps)

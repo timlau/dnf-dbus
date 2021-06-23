@@ -175,3 +175,7 @@ class DnfDbusClient:
     def get_categories(self):
         GetCategories = self.get_async_method('GetCategories')
         return GetCategories()
+
+    def get_groups_by_category(self, cat_id):
+        GetGroupsByCategory = self.get_async_method('GetGroupsByCategory')
+        return GetGroupsByCategory(cat_id)

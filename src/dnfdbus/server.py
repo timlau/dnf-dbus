@@ -98,6 +98,9 @@ class DnfDbusInterface(InterfaceTemplate):
 
     def GetCategories(self) -> Str:
         return self.implementation.get_categories()
+    
+    def GetGroupsByCategory(self, cat_id: str) -> Str:
+        return self.implementation.get_groups_by_category(cat_id)
 
     def TestSignals(self) -> None:
         return self.implementation.test_signals()
@@ -194,6 +197,12 @@ class DnfDbus(Publishable):
     def get_categories(self) -> str:
         self.working_start(write=False)
         value = self.backend.get_categories()
+        return self.working_ended(json.dumps(value))
+    
+    @logger
+    def get_groups_by_category(self, cat_id) -> str:
+        self.working_start(write=False)
+        value = self.backend.get_groups_by_category(cat_id)
         return self.working_ended(json.dumps(value))
 
     @logger
