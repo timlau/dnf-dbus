@@ -3,3 +3,4 @@ __pycache__
 build/
 examples/backend/devtest.py
 .idea/
+examples/misctest.py

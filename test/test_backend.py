@@ -96,10 +96,10 @@ class TestDnfBackend(unittest.TestCase):
         res = self.backend.get_repositories()
         self.assertEqual(self.backend.is_setup, True)
         self.base.read_all_repos.assert_called()
-        self.base.fill_sack_from_repos_in_cache.assert_called()
+        self.base.fill_sack.assert_called()
         res = self.backend.get_repositories()
         self.base.read_all_repos.assert_called_once()
-        self.base.fill_sack_from_repos_in_cache.assert_called_once()
+        self.base.fill_sack.assert_called_once()
 
     def test_get_repositories(self):
         res = self.backend.get_repositories()

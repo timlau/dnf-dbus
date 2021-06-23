@@ -21,6 +21,7 @@ dnfdbus.backend module
 
 import dnf
 
+from .groups import DnfComps
 from .packages import DnfPackages
 from .repo import DnfRepository
 from dnfdbus.misc import log
@@ -33,7 +34,15 @@ class DnfBackend:
         self.is_setup = False
         self._changelogs = False
         self._packages = None
+        self._groups = None
+        self._repo_setup = False
 
+    @property
+    def groups(self):
+        if not self._groups:
+            self._groups = DnfComps(self)
+        return self._groups
+    
     @property
     def packages(self):
         """ Get tha package object"""
@@ -41,11 +50,13 @@ class DnfBackend:
             self._packages = DnfPackages(self)
         return self._packages
 
-    def setup(self, changelogs=False, refresh=False, cache=True):
+    def setup(self, changelogs=False, refresh=False, cache=False):
         """ Setup Dnf load repository info & fill the sack """
         if not self.is_setup or refresh:
             log.debug(f'setup: {refresh=} {cache=} {changelogs=}')
-            _ = self.base.read_all_repos()
+            if not self._repo_setup: # only setup repos once
+                _ = self.base.read_all_repos()
+                self._repo_setup = True
             if changelogs:
                 for repo in self.base.repos.iter_enabled():
                     repo.load_metadata_other = True
